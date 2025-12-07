@@ -193,7 +193,10 @@ This normalization ensures cosine similarity computations are efficient and nume
 
 Each embedding vector is stored in Qdrant along with a rich payload containing:
 \begin{equation}
-\mathrm{payload}(C) = \{chunk\_id, book\_id, book\_name, heading, path, start\_page, end\_page, content, level\}
+\begin{split}
+\mathrm{payload}(C) = \{&\mathrm{chunk\_id}, \mathrm{book\_id}, \mathrm{book\_name}, \mathrm{heading}, \\
+&\mathrm{path}, \mathrm{start\_page}, \mathrm{end\_page}, \mathrm{content}, \mathrm{level}\}
+\end{split}
 \end{equation}
 
 During query processing, this payload facilitates effective document filtering, hierarchical navigation, and associated metadata retrieval. Qdrant's vector collection indexes the payloads and embeddings, allowing for sub-millisecond similarity searches even over millions of pieces.
