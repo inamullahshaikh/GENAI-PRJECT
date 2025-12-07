@@ -12,9 +12,10 @@
 \usepackage{url}
 %
 % If you use the hyperref package, please uncomment the following two lines
-% \usepackage{color}
-% \renewcommand\UrlFont{\color{blue}\rmfamily}
-% \urlstyle{rm}
+\usepackage{color}
+\usepackage{hyperref}
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+\urlstyle{rm}
 %
 \begin{document}
 %
@@ -526,72 +527,59 @@ The authors have no competing interests to declare that are relevant to the cont
 %
 % ---- Bibliography ----
 %
-\begin{thebibliography}{20}
-\bibitem{lewis2020retrieval}
-Lewis, P., et al.: Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. In: NeurIPS 2020, vol. 33, pp. 9459--9474 (2020)
+\begin{thebibliography}{40}
 
-\bibitem{guu2020retrieval}
-Guu, K., et al.: Retrieval Augmented Language Model Pre-Training. In: ICML 2020, pp. 3929--3938 (2020)
+\bibitem{pennington2014glove}
+Pennington, J., Socher, R., Manning, C.: GloVe: Global Vectors for Word Representation. In: EMNLP 2014, pp. 1532--1543 (2014). \url{https://aclanthology.org/D14-1162/}, last accessed 2024/01/15
 
-\bibitem{izacard2022atlas}
-Izacard, G., et al.: Few-Shot Learning with Retrieval Augmented Language Models. arXiv preprint arXiv:2208.03299 (2022)
+\bibitem{celery2020}
+Celery Project: Celery Documentation (Version 4.0). \url{https://app.readthedocs.org/projects/celery/downloads/pdf/4.0/}, last accessed 2024/01/15
 
-\bibitem{borgeaud2022improving}
-Borgeaud, S., et al.: Improving Language Models by Retrieving from Trillions of Tokens. In: ICML 2022, vol. 162, pp. 2206--2240 (2022)
+\bibitem{chauhan2021survey}
+Chauhan, N.K., Ojha, H.K.: A Survey of Tasks Scheduling Algorithms in Distributed Computing Systems. In: Research Anthology on Architectures, Frameworks, and Integration Strategies for Distributed and Cloud Computing, pp. 1269--1281. IGI Global (2021). \url{https://www.researchgate.net/publication/350338509_A_Survey_of_Tasks_Scheduling_Algorithms_in_Distributed_Computing_Systems}, last accessed 2024/01/15
 
-\bibitem{xiong2017end}
-Xiong, C., et al.: End-to-End Neural Ad-hoc Ranking with Kernel Pooling. In: SIGIR 2017, pp. 55--64 (2017)
+\bibitem{thoppilan2022lamda}
+Thoppilan, R., et al.: LaMDA: Language Models for Dialog Applications. arXiv preprint arXiv:2112.04426 (2022). \url{https://arxiv.org/abs/2112.04426}, last accessed 2024/01/15
 
-\bibitem{formal2021splade}
-Formal, T., et al.: SPLADE: Sparse Lexical and Expansion Model for First Stage Ranking. In: SIGIR 2021, pp. 2288--2292 (2021)
 
-\bibitem{khattab2020colbert}
-Khattab, O., Zaharia, M.: ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT. In: SIGIR 2020, pp. 39--48 (2020)
+\bibitem{mikolov2013word2vec}
+Mikolov, T., et al.: Efficient Estimation of Word Representations in Vector Space. arXiv preprint arXiv:1301.3781 (2013). \url{https://arxiv.org/pdf/1301.3781}, last accessed 2024/01/15
 
-\bibitem{xiong2021approximate}
-Xiong, L., et al.: Approximate Nearest Neighbor Negative Contrastive Learning for Dense Text Retrieval. In: ICLR 2021 (2021)
+\bibitem{gemini2024modelcard}
+DeepMind: Gemini 2.5 Flash Lite Model Card. \url{https://storage.googleapis.com/deepmind-media/Model-Cards/Gemini-2-5-Flash-Lite-Model-Card.pdf}, last accessed 2024/01/15
 
-\bibitem{langchain2023}
-LangChain: LangChain Documentation. \url{https://python.langchain.com}, last accessed 2024/01/15
+\bibitem{celery2024stable}
+Celery Project: Celery Documentation (Stable). \url{https://docs.celeryq.dev/en/stable/}, last accessed 2024/01/15
 
-\bibitem{zhang2023adaptive}
-Zhang, J., et al.: Adaptive Chunking for Retrieval-Augmented Generation. In: EMNLP 2023, pp. 1234--1245 (2023)
+\bibitem{ijaibdcms2021}
+Kumar, P., Ojha, H.K.: A High Performance Model for Task Allocation in Distributed Computing System Using K-Means Clustering Technique. International Journal of Artificial Intelligence and Big Data Computing Management Systems, 3(2), 257--268 (2021). \url{https://ijaibdcms.org/index.php/ijaibdcms/article/view/257}, last accessed 2024/01/15
 
-\bibitem{ding2023long}
-Ding, Y., et al.: Long Context Language Models: A Survey. arXiv preprint arXiv:2308.12707 (2023)
+\bibitem{arxiv250706261}
+arXiv preprint arXiv:2507.06261 (2025). \url{https://arxiv.org/abs/2507.06261}, last accessed 2024/01/15
 
-\bibitem{karpukhin2020dense}
-Karpukhin, V., et al.: Dense Passage Retrieval for Open-Domain Question Answering. In: EMNLP 2020, pp. 6769--6781 (2020)
+\bibitem{arxiv250912384}
+arXiv preprint arXiv:2509.12384 (2025). \url{https://arxiv.org/abs/2509.12384}, last accessed 2024/01/15
 
-\bibitem{wang2023self}
-Wang, Z., et al.: Self-Consistency Improves Chain of Thought Reasoning in Language Models. In: ICLR 2023 (2023)
+\bibitem{arxiv210408821}
+arXiv preprint arXiv:2104.08821 (2021). \url{https://arxiv.org/abs/2104.08821}, last accessed 2024/01/15
 
-\bibitem{gao2023retrieval}
-Gao, L., et al.: Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks: A Survey. arXiv preprint arXiv:2312.10997 (2023)
+\bibitem{wang2025vectordb}
+Wang, S., et al.: Towards Reliable Vector Database Management Systems: A Software Testing Roadmap for 2030. arXiv preprint arXiv:2502.20812 (2025). \url{https://arxiv.org/pdf/2502.20812}, last accessed 2024/01/15
 
-\bibitem{cohan2020specter}
-Cohan, A., et al.: SPECTER: Document-level Representation Learning using Citation-informed Transformers. In: ACL 2020, pp. 2270--2282 (2020)
+\bibitem{zhong2025lsmvec}
+Zhong, S., Mo, D., Luo, S.: LSM-VEC: A Large-Scale Disk-Based System for Dynamic Vector Search. arXiv preprint arXiv:2505.17152 (2025). \url{https://arxiv.org/abs/2505.17152}, last accessed 2024/01/15
 
-\bibitem{beltagy2019scibert}
-Beltagy, I., et al.: SciBERT: A Pretrained Language Model for Scientific Text. In: EMNLP 2019, pp. 3615--3620 (2019)
+\bibitem{brinner2025semcse}
+Brinner, M.F., Zarrieß, S.: SemCSE: Semantic Contrastive Sentence Embeddings Using LLM-Generated Summaries For Scientific Abstracts. In: EMNLP 2025, pp. 32693--32708 (2025). \url{https://aclanthology.org/2025.emnlp-main.1662.pdf}, last accessed 2024/01/15
 
-\bibitem{lo2020s2orc}
-Lo, K., et al.: S2ORC: The Semantic Scholar Open Research Corpus. In: ACL 2020, pp. 4969--4983 (2020)
+\bibitem{arxiv241212591}
+arXiv preprint arXiv:2412.12591 (2024). \url{https://arxiv.org/html/2412.12591v2}, last accessed 2024/01/15
 
-\bibitem{johnson2019billion}
-Johnson, J., et al.: Billion-Scale Similarity Search with GPUs. IEEE Transactions on Big Data, 7(3), 535--547 (2019)
+\bibitem{ethz2024}
+ETH Zurich Research Collection (2024). \url{https://www.research-collection.ethz.ch/bitstreams/f1fcf884-241f-46e2-963b-d542ea2fb5e9/download}, last accessed 2024/01/15
 
-\bibitem{qdrant2023}
-Qdrant: Vector Database for Similarity Search. \url{https://qdrant.tech}, last accessed 2024/01/15
-
-\bibitem{reimers2019sentence}
-Reimers, N., Gurevych, I.: Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks. In: EMNLP 2019, pp. 3982--3992 (2019)
-
-\bibitem{papineni2002bleu}
-Papineni, K., et al.: BLEU: a Method for Automatic Evaluation of Machine Translation. In: ACL 2002, pp. 311--318 (2002)
-
-\bibitem{lin2004rouge}
-Lin, C.Y.: ROUGE: A Package for Automatic Evaluation of Summaries. In: ACL 2004 Workshop, pp. 74--81 (2004)
+\bibitem{arxiv240915763}
+arXiv preprint arXiv:2409.15763 (2024). \url{https://arxiv.org/abs/2409.15763}, last accessed 2024/01/15
 
 \end{thebibliography}
 \end{document}
