@@ -23,14 +23,14 @@
 %
 \titlerunning{FastCite: RAG-Based Study Assistant}
 %
-\author{Aden Sial\inst{1} \and
-Inam Ullah Shaikh\inst{1} \and
-Emaan Fatima\inst{1}}
+\author{Inam Ullah Shaikh\inst{1} \and
+Emaan Fatima\inst{1} \and
+Aden Sial\inst{1}}
 %
-\authorrunning{A. Sial et al.}
+\authorrunning{Inam, Emaan, Aden}
 %
 \institute{National University of Computing and Emerging Sciences, Islamabad, Pakistan\\
-\email{\{22i-1313, 22i-0857, 22i-0869\}@nu.edu.pk}}
+\email{\{i220857, i220869, i221313\}@nu.edu.pk}}
 %
 \maketitle
 %
@@ -178,7 +178,8 @@ This approach ensures comprehensive coverage while maintaining context through o
 
 \subsection{Embedding Generation and Storage}
 
-We employ the all-mpnet-base-v2 model from the sentence\_transformers library~\cite{reimers2019sentence} for generating document embeddings. This model produces 768-dimensional vectors optimized for semantic similarity tasks. The development of word embeddings has evolved from early approaches like Word2Vec~\cite{mikolov2013word2vec} and GloVe~\cite{pennington2014glove} to modern transformer-based sentence embeddings.
+We used the all-mpnet-base-v2 model (dimension size $=768$) from the sentence-transformers library~\cite{reimers2019sentence} to create embeddings of the document chunks. The generation of word embeddings has evolved from early stages like Word2Vec~\cite{mikolov2013word2vec} and GloVe~\cite{pennington2014glove} to modern transformer-based sentence embeddings.
+
 
 For a text chunk $C$ with content $text_C$, the embedding vector $\mathbf{e}_C$ is computed as:
 \begin{equation}
@@ -197,15 +198,15 @@ Each embedding vector is stored in Qdrant along with a rich payload containing:
 \mathrm{payload}(C) = \{chunk\_id, book\_id, book\_name, heading, path, start\_page, end\_page, content, level\}
 \end{equation}
 
-This payload enables efficient filtering by document, hierarchical navigation, and retrieval of associated metadata during query processing. The embeddings and payloads are indexed in Qdrant's vector collection, enabling sub-millisecond similarity search even across millions of chunks.
+During query processing, this payload facilitates effective document filtering, hierarchical navigation, and associated metadata retrieval. Qdrant's vector collection indexes the payloads and embeddings, allowing for sub-millisecond similarity searches even over millions of pieces.
 
 \subsection{Hybrid Search Algorithm}
 
-When a user selects a PDF and enters a query prompt, the system first converts the prompt into an embedding vector using the same all-mpnet-base-v2 model. Our hybrid search then combines semantic vector search with keyword-based retrieval, addressing limitations of each approach individually.
+The system first uses the same all-mpnet-base-v2 model to transform a query prompt into an embedding vector when a user chooses a PDF. The shortcomings of each method separately are then addressed by our hybrid search, which combines keyword-based retrieval and semantic vector search.
 
 \subsubsection{Vector Search}
 
-Given a user query $q$ with embedding $\mathbf{e}_q$ (computed using the same MPNet model), we retrieve top-$k$ chunks from the selected document using cosine similarity in Qdrant:
+Using cosine similarity in Qdrant, we extract top-$k$ chunks from the chosen page given a user query $q$ with embedding $\mathbf{e}_q$ (calculated using the same MPNet model):
 \begin{equation}
 \mathrm{sim}_v(C_i, q) = \frac{\mathbf{e}_{C_i} \cdot \mathbf{e}_q}{||\mathbf{e}_{C_i}|| \cdot ||\mathbf{e}_q||}
 \end{equation}
@@ -214,10 +215,8 @@ Vector search returns results $R_v = \{(C_i, s_i^v)\}$ where $s_i^v$ is the cosi
 
 \subsubsection{Keyword Search}
 
-We extract keywords from the query using a simple tokenization and filtering approach:
-\begin{equation}
-\mathrm{keywords}(q) = \{w : w \in \mathrm{tokenize}(q), |w| > 2, w \notin \mathrm{stopwords}\}
-\end{equation}
+We use a straightforward tokenization and filtering method to extract keywords from the query:
+\begin{equation}mathrm{keywords}(k) = w: w \in \mathrm{tokenize}(k), |w| > 2, w \notin \mathrm{stopwords} \end{equation}
 
 For each chunk $C_i$ with content $text_i$, we calculate a keyword score based on term frequency and coverage:
 \begin{equation}
@@ -297,27 +296,27 @@ Our storage architecture choices reflect the diverse requirements of different d
 %
 \section{Experimental Setup and Results}
 
-This section describes our experimental methodology, evaluation metrics, dataset characteristics, and comprehensive results including comparative analysis and ablation studies.
+Our experimental approach, assessment metrics, dataset features, and thorough findings, including comparison analysis and ablation investigations, are all covered in this part.
 
 \subsection{Experimental Setup}
 
 \subsubsection{Dataset}
 
-We evaluated FastCite on a diverse collection of academic documents including textbooks, research papers, technical manuals, and various other PDF documents. The dataset comprises 150 documents spanning computer science, mathematics, physics, and engineering domains. Documents range from 50 to 2000 pages, with varying structures including well-organized textbooks with detailed table of contents (TOC) and unstructured research papers. Our system's adaptive chunking strategies handle this document diversity effectively, processing both structured documents with TOC and unstructured PDFs without predefined organizational structure.
+A wide range of academic texts, including textbooks, research papers, technical manuals, and other PDF documents, were used to test FastCite. 150 documents from the fields of computer science, mathematics, physics, and engineering make up the dataset. The length of the documents varies from 50 to 2000 pages, and they can be unstructured research papers or well-structured textbooks with a comprehensive table of contents (TOC). This document diversity is well handled by our system's adaptive chunking algorithms, which process both unstructured PDFs without a predetermined organizational structure and structured documents with TOC.
 
-For evaluation, we constructed a test set of 200 queries covering various question types: factual questions requiring exact information retrieval, conceptual questions requiring semantic understanding, and complex questions requiring synthesis across multiple document sections. Queries were manually curated to represent realistic academic citation scenarios.
+We created a test set of 200 questions for evaluation that covered a variety of question kinds, including factual questions that required precise information retrieval, conceptual questions that required semantic comprehension, and complicated questions that required synthesis across several document sections. Realistic academic citation contexts were represented by carefully chosen queries.
 
 \subsubsection{Evaluation Metrics}
 
-We employ multiple metrics to comprehensively evaluate system performance:
+To thoroughly assess system performance, we use a variety of metrics:
 
-\textbf{Retrieval Accuracy:} We measure precision@k, recall@k, and F1@k for retrieved contexts, where relevance is determined by expert annotation.
+\textbf{Retrieval Accuracy:} For recovered contexts, where expert annotation determines relevance, we assess precision@k, recall@k, and F1@k.
 
-\textbf{Answer Quality:} We use BLEU scores~\cite{papineni2002bleu} for answer-text similarity and ROUGE-L~\cite{lin2004rouge} for answer-reference overlap. Additionally, we employ human evaluation on a 5-point scale for answer relevance, accuracy, and citation quality.
+\textbf{Answer Quality:} We employ ROUGE-L~\cite{lin2004rouge} for answer-reference overlap and BLEU scores~\cite{papineni2002bleu} for answer-text similarity. We also use human evaluation for citation quality, accuracy, and answer relevancy on a 5-point scale.
 
-\textbf{Computational Efficiency:} We measure average query response time, including retrieval, context selection, and generation phases. We also track token usage and API call counts for cost analysis.
+\textbf{Computational Efficiency:} We calculate the average query response time, taking into account the phases of generation, context selection, and retrieval. For cost analysis, we also monitor token usage and API call counts.
 
-\textbf{Citation Accuracy:} We measure the percentage of generated answers that correctly cite source documents and page numbers, verified against ground truth.
+\textbf{Citation Accuracy:} Verified against ground truth, we calculate the proportion of generated responses that accurately cite source documents and page numbers.
 
 \subsubsection{Baseline Systems}
 
@@ -333,10 +332,10 @@ We compare FastCite against several baseline approaches:
 
 \subsection{Comparative Results}
 
-Table~\ref{tab:comparison} presents comprehensive comparison results across all evaluation metrics.
+Comprehensive comparison results for all evaluation metrics are shown in Table~\ref{tab:comparison}.
 
 \begin{table}
-\caption{Comparative performance of FastCite against baseline systems.}
+\caption{Comparative performance of FastCite against other systems.}
 \label{tab:comparison}
 \begin{tabular}{|l|c|c|c|c|c|}
 \hline
@@ -351,15 +350,14 @@ No Selection & 0.75 & 0.75 & 0.51 & 0.58 & 3.2 \\
 \end{tabular}
 \end{table}
 
-FastCite achieves superior performance across all metrics. The hybrid search approach (0.82 precision@10) significantly outperforms pure vector (0.72) and pure keyword (0.65) methods, demonstrating the value of combining semantic and keyword signals. The intelligent context selection mechanism contributes to improved answer quality (BLEU 0.56 vs 0.51 for no selection) while maintaining reasonable response times (2.5s vs 3.2s).
+In every metric, FastCite performs better than the competitors. The hybrid search methodology (0.82 precision@10), which outperforms pure vector (0.72) and pure keyword (0.65) methods, highlights the importance of combining semantic and keyword information. The intelligent context selection strategy improves answer quality (BLEU 0.56 vs. 0.51 for no selection) while maintaining tolerable response times (2.5s vs. 3.2s).
 
 \subsection{Ablation Study}
 
-We conduct comprehensive ablation studies to understand the contribution of each system component and identify optimal hyperparameter configurations.
-
+To determine the best hyperparameter combinations and comprehend the role of each system component, we do extensive ablation investigations.
 \subsubsection{Hybrid Search Weight Analysis}
 
-Figure~\ref{fig:hybrid_weights} shows the impact of varying vector and keyword weights on retrieval accuracy. We tested weight combinations from pure vector (1.0, 0.0) to pure keyword (0.0, 1.0) in 0.1 increments.
+The effect of different vector and keyword weights on retrieval accuracy is depicted in Figure~\ref{fig:hybrid_weights}. We tested weight combinations from pure vector (1.0, 0.0) to pure keyword (0.0, 1.0) in 0.1 increments.
 
 \begin{figure}
 \centering
