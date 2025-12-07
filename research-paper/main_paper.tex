@@ -55,8 +55,7 @@ This is how the rest of the paper is structured. Section 2 examines relevant res
 Retrieval-Augmented Generation has come a long way since its beginnings, with several studies addressing various aspects of the RAG pipeline. Important research on RAG systems, hybrid search strategies, document chunking algorithms, and context selection techniques are covered in this section.
 
 \subsection{Retrieval-Augmented Generation Systems}
-
-Lewis et al.~\cite{lewis2020retrieval} introduced the foundational RAG architecture, demonstrating how retrieval mechanisms can enhance language model performance by providing external knowledge sources. Their work established the two-stage paradigm of retrieval followed by generation, which has become the standard approach in subsequent RAG implementations. Guu et al.~\cite{guu2020retrieval} extended this work by proposing REALM, a system that jointly trains retrieval and reading components, achieving improved performance on open-domain question answering tasks.
+The fundamental RAG architecture was presented by Lewis et al.~\cite{lewis2020retrieval}, who showed how retrieval methods may improve language model performance by supplying external sources of information. Their work established the two-stage paradigm of retrieval followed by generation, which has become the standard approach in subsequent RAG implementations. Guu et al.~\cite{guu2020retrieval} extended this work by proposing REALM, a system that jointly trains retrieval and reading components, achieving improved performance on open-domain question answering tasks.
 
 More recently, several works have extended the foundational RAG architecture, demonstrating the importance of fine-tuning retrieval models on task-specific data and incorporating retrieved passages at multiple layers.
 
@@ -127,7 +126,7 @@ The following steps are taken by the system when a user chooses a PDF and submit
 \begin{figure}
 \centering
 \includegraphics[width=0.9\textwidth]{fig1.eps}
-\caption{FastCite system architecture showing the three-stage pipeline: document processing, hybrid retrieval, and answer generation.}
+\caption{The three-stage pipeline, document processing, hybrid retrieval, and response generation, is depicted in the FastCite system architecture.}
 \label{fig:architecture}
 \end{figure}
 
@@ -149,11 +148,11 @@ where $path_i$ represents the hierarchical path constructed from parent headings
 path_i = \bigcup_{j: level_j < level_i, page_j < page_i} title_j \rightarrow title_i
 \end{equation}
 
-The text extraction process handles edge cases where headings appear mid-page, ensuring text above headings is correctly attributed to previous chunks. This preserves semantic coherence while maintaining structural boundaries.
+In order to ensure that material above headers is appropriately assigned to earlier chunks, the text extraction method takes care of borderline circumstances where headings arrive in the middle of the page. This keeps structural boundaries intact while preserving semantic integrity.
 
 \subsubsection{Chunking Academic Papers Based on Pages}
+For publications without a TOC, which are typically academic papers, we employ a sliding window method with flexible page ranges and overlap. We create chunks with overlap $o$ and step size given pages per chunk $p$:
 
-We use a sliding window technique with adjustable page ranges and overlap for documents lacking a TOC, which are usually academic papers. We generate chunks with step size given pages per chunk $p$ and overlap $o$:
 \begin{equation}
 step\_size = \max(1, p - o)
 \end{equation}
@@ -168,14 +167,14 @@ Each chunk $C_k$ spans pages $[start_k, end_k]$ where:
 start_k = k \cdot step\_size, \quad end_k = \min(start_k + p - 1, N - 1)
 \end{equation}
 
-This method guarantees thorough coverage while preserving context through overlap, which is essential for academic publications where ideas could take up several pages.
+This approach ensures comprehensive coverage while maintaining context through overlap, which is crucial for scholarly publications where concepts may span many pages.
 
 \subsection{Embedding Generation and Storage}
 
-We used the all-mpnet-base-v2 model (dimension size $=768$) from the sentence-transformers library~\cite{reimers2019sentence} to create embeddings of the document chunks. The generation of word embeddings has evolved from early stages like Word2Vec~\cite{mikolov2013word2vec} and GloVe~\cite{pennington2014glove} to modern transformer-based sentence embeddings.
+We created embeddings of the document chunks using the all-mpnet-base-v2 model (dimension size $=768$) from the sentence-transformers library~\cite{reimers2019sentence}. From early iterations such as Word2Vec~\cite{mikolov2013word2vec} and GloVe~\cite{pennington2014glove}, the creation of word embeddings has progressed to modern transformer-based sentence embeddings.
 
+The embedding vector $\mathbf{e}_C$ for a text chunk $C$ with content $text_C$ is calculated as follows:
 
-For a text chunk $C$ with content $text_C$, the embedding vector $\mathbf{e}_C$ is computed as:
 \begin{equation}
 \mathbf{e}_C = \mathrm{MPNet}(text_C) \in \mathbb{R}^{768}
 \end{equation}
@@ -185,7 +184,7 @@ The model uses mean pooling over token embeddings, followed by L2 normalization:
 \mathbf{e}_C = \frac{\mathbf{e}_C}{||\mathbf{e}_C||_2}
 \end{equation}
 
-This normalization ensures cosine similarity computations are efficient and numerically stable.
+The efficiency and numerical stability of cosine similarity calculations are guaranteed by this normalization.
 
 Each embedding vector is stored in Qdrant along with a rich payload containing:
 \begin{equation}
@@ -281,13 +280,14 @@ The generated answer is returned to the user along with references to the source
 
 \subsection{Design Rationale}
 
-Our system design decisions are based on empirical evaluation and practical considerations. With 768-dimensional embeddings that are manageable for large-scale retrieval while preserving high-quality semantic representations, the all-mpnet-base-v2 embedding model from sentence\_transformers~\cite{reimers2019sentence} offers an ideal compromise between semantic comprehension and computational efficiency. This decision leverages contemporary transformer architectures for sentence-level comprehension while building on fundamental work in word embeddings~\cite{mikolov2013word2vec,pennington2014glove}.
+Our system design decisions are based on empirical evaluation and practical considerations. With 768-dimensional embeddings that are manageable for large-scale retrieval while preserving high-quality semantic representations, the all-mpnet-base-v2 embedding model from sentence\_transformers~\cite{reimers2019sentence} offers an ideal compromise between semantic comprehension and computational efficiency. This choice builds on basic work in word embeddings~\cite{mikolov2013word2vec,pennington2014glove} while utilizing modern transformer designs for sentence-level understanding.
 
-Ablation experiments revealed that the hybrid search strategy (60\% vector, 40\% keyword) performed better than pure approaches. The 60/40 weighting addresses the shortcomings of each approach separately by capturing both semantic linkages and precise keyword matches.
+The hybrid search technique (60\% vector, 40\% keyword) outperformed conventional methods, according to ablation studies. By collecting both semantic connections and exact keyword matches, the 60/40 weighting overcomes the drawbacks of each method independently.
 
-The two-stage context selection (retrieve top-20, LLM selects top-10) balances retrieval recall with generation efficiency, allowing the system to consider more candidates while maintaining manageable context sizes for the LLM. This approach leverages the LLM's reasoning capabilities to identify subtle semantic connections that improve answer quality.
+The system may take into account greater number of candidates while keeping reasonable context sizes for the LLM thanks to the two-stage context selection (retrieve top-20, LLM picks top-10), which strikes a compromise between retrieval recall and generation accuracy. This method makes use of the LLM's reasoning skills to find hidden semantic linkages that enhance the quality of the answers.
 
 The various needs of various data kinds are reflected in the storage architecture decisions we make. Fast retrieval of semantically related chunks is made possible by Qdrant's efficient vector similarity search with full payload support. The significance of tackling particular testing issues in vector database management systems (VDBMS), such as high-dimensional vector data processing and dynamic data scaling, has been highlighted by recent research on VDBMS~\cite{wang2025vectordb}. For the best query performance, our solution makes use of Qdrant's in-memory capabilities. Backblaze B2 provides affordable cloud storage for small PDFs, making source material easily accessible.
+
 MongoDB offers flexible document storage for metadata, facilitating user management and sophisticated queries. Scalability, performance, and cost-effectiveness are all guaranteed by this distributed architecture.
 
 %
@@ -457,17 +457,16 @@ Results show that FastCite performs best on well-structured documents (textbooks
 
 \subsection{Error Analysis}
 
-To determine the limitations of the system, we examined failure situations. The following are common types of errors: (1) requests that require knowledge across several distant document sections (15\% of failures); (2) requests with unclear vocabulary that is poorly represented in embeddings (12\% of failures); and (3) requests that require temporal reasoning or current knowledge (8\% of failures). In Section 5, we address possible enhancements based on those constraints.
-
+We looked at failure scenarios to identify the system's limits.  Common error types include: (1) requests requiring knowledge across multiple remote document sections (15\% of failures); (2) requests with ambiguous vocabulary poorly represented in embeddings (12\% of failures); and (3) requests requiring temporal reasoning or current knowledge (8\% of failures).  We discuss potential improvements based on those limitations in Section 5.
 %
 %
 \section{Discussion, Limitations and Future Work}
 
 \subsection{Discussion}
 
-The idea that mixing these complementing retrieval signals increases overall system performance is validated by our experimental results, which show that FastCite's hybrid search methodology far exceeds pure semantic or keyword-based methods. An ideal equilibrium that accounts for both semantic linkages and correct term matches is provided by the 60/40 vector/keyword weighting, which was established through empirical study.
+Our experimental results, which demonstrate that FastCite's hybrid search technique far exceeds pure semantic or keyword-based methods, support the idea that combining these related retrieval signals improves overall system performance. The 60/40 vector/keyword weighting, which was developed through empirical research, provides an optimum equilibrium that takes into account both semantic links and accurate term matches.
 
-When compared to score-based selection, the LLM-based context selection process shows a 14\% boost in answer quality (BLEU 0.56 vs. 0.49). This implies that language models are capable of reasoning about query-context relevance in a way that goes beyond straightforward similarity measures, recognizing deep semantic relationships that enhance answer formulation.
+The LLM-based context selection procedure exhibits a 14\% increase in response quality (BLEU 0.56 vs. 0.49) as compared to score-based selection. This suggests that language models are able to recognize deep semantic linkages that improve answer formulation and reason about query-context relevance in a way that goes beyond simple similarity metrics.
 
 Our ablation investigations provide valuable information for the design of RAG systems. When contrasted to single-stage retrieval with less contexts, the two-stage retrieval technique (retrieve more, select smartly) performs better, showing that intelligent selection may balance retrieval recall and generation efficiency. A sweet spot on the accuracy-efficiency trade-off curve is represented by the ideal top-20 retrieval with top-10 selection configuration.
 
@@ -500,7 +499,7 @@ We showed that FastCite outperforms baseline study assistant systems with precis
 
 Dependency on document structure quality, fixed hybrid search weighting, processing overhead from context selection, and difficulties with complex multi-section queries are some of the system's drawbacks. These drawbacks, however, provide distinct possibilities for further investigation, such as domain-specific embeddings, dynamic weighing methods, enhanced chunking techniques, and multi-document question management.
 
-With its thorough integration of retrieval techniques, intelligent context selection, and adaptive document processing, FastCite is a major advancement in AI-powered study tools that may significantly enhance learning support. With implications that go beyond study tools to multipurpose learning support systems, the thorough ablation investigations and thorough performance analysis set the basis for future research in educational AI.
+FastCite is a key development in AI-powered study tools that might greatly improve learning assistance because of its comprehensive integration of retrieval techniques, intelligent context selection, and adaptive document processing. The comprehensive ablation investigations and performance analysis lay the basis for future research in educational AI, with implications ranging from educational tools to versatile learning support systems.
 
 AI study tools like FastCite will become more essential for students looking for customized, effective learning assistance as digital learning resources continue to spread. While our thorough analysis of system components and hyperparameters offers useful advice for developers creating the next generation of educational AI tools, our work shows that hybrid approaches incorporating multiple retrieval inputs with sophisticated processing can achieve outstanding results in educational scenarios.
 %
