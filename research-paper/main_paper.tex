@@ -35,7 +35,7 @@ Emaan Fatima\inst{1}}
 \maketitle
 %
 \begin{abstract}
-Retrieval-Augmented Generation (RAG) systems have emerged as a powerful paradigm for enhancing large language models with domain-specific knowledge. However, existing RAG implementations face significant challenges in academic document citation, particularly in handling diverse document structures, achieving optimal retrieval accuracy, and managing computational efficiency. This paper presents FastCite, a novel RAG system specifically designed for academic document citation that addresses these limitations through a hybrid search mechanism combining semantic vector search with keyword-based retrieval, intelligent context selection using large language models, and adaptive document chunking strategies. Our system employs the all-mpnet-base-v2 embedding model for semantic understanding, Qdrant vector database for efficient similarity search, and Google Gemini 2.5 Flash Lite for answer generation. We introduce a weighted hybrid search approach (60\% vector, 40\% keyword) that significantly improves retrieval accuracy compared to pure semantic or keyword-based methods. Additionally, we implement an LLM-based context selection mechanism that intelligently filters and ranks retrieved contexts before generation. Through comprehensive experiments and ablation studies, we demonstrate that FastCite achieves superior performance in citation accuracy, response quality, and computational efficiency compared to baseline RAG systems. Our ablation study reveals optimal hyperparameter configurations, including top-k retrieval values, hybrid search weight distributions, and context selection strategies, providing valuable insights for future RAG system development.
+Retrieval-Augmented Generation (RAG) systems have emerged as a powerful paradigm for enhancing large language models with domain-specific knowledge. However, existing RAG implementations face significant challenges in academic document citation, particularly in handling diverse document structures, achieving optimal retrieval accuracy, and managing computational efficiency. This paper presents FastCite, a novel RAG system specifically designed for academic document citation that addresses these limitations through a hybrid search mechanism combining semantic vector search with keyword-based retrieval, intelligent context selection using large language models, and adaptive document chunking strategies. Our system employs the all-mpnet-base-v2 embedding model for semantic understanding, Qdrant vector database for efficient similarity search, and Google Gemini 2.5 Flash Lite for answer generation. We introduce a weighted hybrid search approach (60\% vector, 40\% keyword) that significantly improves retrieval accuracy compared to pure semantic or keyword-based methods. In order to guarantee that students receive specific helpful responses, we additionally use an LLM-based context selection mechanism that effectively modifies retrieved study materials to provide the most relevant information. We demonstrate that FastCite outperforms baseline study assistant systems in terms of response quality, response accuracy, and computational efficiency through extensive experiments and ablation studies. Our ablation study provides useful insights for future development of educational AI systems by displaying optimal hyperparameter configurations, such as top-k retrieval values, hybrid search weight distributions, and context picking strategies.
 
 \keywords{Retrieval-Augmented Generation \and Hybrid Search \and Academic Citation \and Document Chunking \and Context Selection}
 \end{abstract}
@@ -44,19 +44,18 @@ Retrieval-Augmented Generation (RAG) systems have emerged as a powerful paradigm
 %
 \section{Introduction}
 
-The exponential growth of academic literature has created unprecedented challenges for researchers seeking to navigate, understand, and cite relevant information from vast document collections. Traditional information retrieval systems, while effective for keyword-based searches, often fail to capture semantic relationships and contextual nuances essential for academic citation tasks. The emergence of large language models (LLMs) has revolutionized natural language understanding, yet these models suffer from limitations including knowledge cutoff dates, hallucination tendencies, and lack of access to domain-specific documents.
+There are plenty of digital learning resources available to students today, which include lecture notes and textbooks to research papers and study guides. While the variety of resources offers previously unobtainable learning opportunities, it also brings significant challenges: students find it difficult to find relevant data quickly, comprehend difficult concepts, and receive specific study assistance. Students find it challenging to ask natural questions or find information when they don't know the exact terminology because traditional search tools require exact keyword matches. Although study chatbots and AI assistants have shown potential, current implementations frequently give generic answers or are unable to accurately retrieve information from students' particular course materials.
 
-Retrieval-Augmented Generation (RAG)~\cite{lewis2020retrieval} has emerged as a promising solution that combines the strengths of information retrieval systems with the generative capabilities of LLMs. By retrieving relevant document passages and providing them as context to language models, RAG systems can generate accurate, grounded responses while maintaining access to up-to-date information. However, existing RAG implementations face several critical challenges when applied to academic document citation scenarios. First, academic documents exhibit diverse structures ranging from well-organized textbooks with table of contents to unstructured research papers and various other PDF formats, requiring adaptive chunking strategies. Second, retrieval accuracy remains suboptimal, with pure semantic search missing exact keyword matches and pure keyword search failing to capture semantic similarity. Third, the computational overhead of processing large numbers of retrieved contexts can significantly impact system responsiveness.
+A potentially successful approach that combines the benefits of information retrieval systems with the generative powers of LLMs is Retrieval-Augmented Generation (RAG)~\cite{lewis2020retrieval}. RAG systems can produce precise, well-founded answers while retaining access to current data by obtaining relevant document passages and using them as context for language models. By retrieving relevant sections from course materials and using these passages to generate contextualized answers, this approach offers a powerful solution for creating intelligent study assistants that can respond to questions based on students' uploaded documents, offering customized, accurate study support. However, when used in educational settings, current RAG implementations encounter a number of significant difficulties. First, students' study materials have a variety of structures, from unstructured lecture notes and other PDF formats to well-organized textbooks with a table of contents, necessitating the use of adaptive chunking techniques. Second, in addition to occasionally needing to locate specific terms or definitions, students ask questions in natural, conversational language that might not match exact keywords in documents. Retrieval accuracy is still not at its best; both semantic comprehension and keyword precision are needed, as pure semantic search misses exact keyword matches and pure keyword search fails to capture semantic similarity. Third, the system may appear sluggish and unresponsive during study sessions due to the computational overhead of processing a large number of retrieved contexts.
 
-This paper introduces FastCite, an enhanced RAG system specifically designed to address the unique requirements of academic document citation. Our system makes several key contributions to the field. First, we propose a hybrid search mechanism that intelligently combines semantic vector search (60\%) with keyword-based retrieval (40\%), achieving superior retrieval accuracy compared to single-method approaches. The hybrid approach leverages the semantic understanding capabilities of transformer-based embeddings while preserving the precision of keyword matching for exact term retrieval. Second, we introduce an LLM-based context selection mechanism that processes a larger set of retrieved contexts (top-20) and intelligently selects the most relevant subset (top-10) before answer generation, reducing noise and improving response quality. Third, we develop adaptive document chunking strategies that handle both structured documents with table of contents and unstructured academic papers, as well as various other PDF document types, ensuring optimal context preservation across diverse document formats. Fourth, we conduct comprehensive ablation studies examining the impact of various hyperparameters including retrieval top-k values, hybrid search weight distributions, and context selection methods, providing empirical evidence for optimal system configuration.
+This paper presents FastCite, a chatbot that uses AI to help students learn from their course materials by intelligently responding to their questions. Our system contributes significantly to educational AI in a number of ways. First, we suggest a hybrid search method that cleverly blends keyword-based retrieval (40\%) and semantic vector search (60\%), enabling students to ask questions organically while still finding precise information when needed. With this method, students can ask questions like "how does machine learning work?" and receive pertinent answers even if the document uses different phrasing. They can also find specific definitions when they look up specific terms. In order to ensure that students receive targeted, beneficial responses free of information overload, we also present an LLM-based context selection method that evaluates a broader set of retrieved study materials (top-20) and effectively chooses the most relevant portion (top-10) before generating answers. Third, we create flexible document chunking techniques that manage both organized documents with table of contents, unstructured resources like class notes, and other types of PDF documents, guaranteeing the most effective data retrieval across a variety of study guides. Fourth, in order to provide evidence for the ideal study assistant configuration, we perform extensive ablation experiments that look at the effects of several hyperparameters, such as retrieval top-k values, hybrid search weight distributions, and context selection techniques.
 
-The remainder of this paper is organized as follows. Section 2 reviews related work in RAG systems, hybrid search methods, and academic document processing. Section 3 presents our methodology, including detailed descriptions of the hybrid search algorithm, context selection mechanism, document chunking strategies, and mathematical formulations. Section 4 describes our experimental setup, evaluation metrics, and presents comprehensive results including comparative analysis with baseline systems and detailed ablation studies. Section 5 discusses the implications of our findings, system limitations, and directions for future research. Finally, Section 6 concludes the paper by summarizing key findings and their significance.
+This is how the rest of the paper is structured. Section 2 examines relevant research in academic document processing, RAG systems, educational chatbots, and hybrid search techniques. Our methodology, which includes thorough explanations of the hybrid search algorithm, context selection mechanism, document chunking techniques, and mathematical formulations, is presented in Section 3. Our experimental setup, evaluation measures, and extensive results, including detailed ablation investigations and comparisons with baseline systems, are described in Section 4. The implications of our findings, system limitations, and future research directions are covered in Section 5. The paper is concluded in Section 6 with a summary of the main conclusions and their implications for the advancement of educational AI.
 
 %
 %
 \section{Related Work}
-
-The field of Retrieval-Augmented Generation has witnessed significant advancement since its introduction, with numerous research efforts addressing various aspects of the RAG pipeline. This section reviews relevant work in RAG systems, hybrid search methodologies, document chunking strategies, and context selection mechanisms.
+Since its inception, the field of Retrieval-Augmented Generation has advanced significantly, with many research projects tackling different facets of the RAG pipeline. This section discusses important work in RAG systems, hybrid search approaches, document chunking algorithms, and context selection mechanisms.
 
 \subsection{Retrieval-Augmented Generation Systems}
 
@@ -70,11 +69,11 @@ The combination of semantic and keyword-based search has been explored in variou
 
 \subsection{Document Chunking and Processing}
 
-Effective document chunking is crucial for RAG system performance, as it determines the granularity of retrievable information. However, academic documents present unique challenges due to their hierarchical structure and varying formats. Zhang et al.~\cite{zhang2023adaptive} proposed adaptive chunking strategies that consider document structure and semantic boundaries, showing improvements in retrieval accuracy. Their work emphasizes the importance of preserving document structure during chunking. For academic documents with thousands of pages, effective chunking remains essential for maintaining retrieval precision.
+The granularity of retrievable information is determined by effective document chunking, which is critical to RAG system performance. However, due to their different formats and hierarchical structure, academic documents pose particular difficulties. In order to increase retrieval accuracy, Zhang et al.~\cite{zhang2023adaptive} presented adaptive chunking algorithms that take semantic boundaries and document structure into consideration. Their research highlights how crucial it is to maintain document structure during chunking. Effective chunking is still crucial for preserving retrieval accuracy in academic publications with thousands of pages.
 
 \subsection{Context Selection and Ranking}
 
-The problem of selecting the most relevant contexts from a larger retrieved set has been addressed in various ways. Karpukhin et al.~\cite{karpukhin2020dense} introduced Dense Passage Retrieval (DPR), demonstrating that dense embeddings can outperform traditional sparse retrieval methods. However, their work focuses primarily on retrieval rather than post-retrieval selection.
+Many approaches have been taken to the problem of choosing the most relevant contexts from an expanded retrieved set. In order to show that dense embeddings can perform better than conventional sparse retrieval techniques, Karpukhin et al.~\cite{karpukhin2020dense} proposed Dense Passage Retrieval (DPR). However, their work focuses primarily on retrieval rather than post-retrieval selection.
 
 Wang et al.~\cite{wang2023self} proposed self-consistency methods for improving RAG system reliability, including techniques for context re-ranking. Their work shows that re-ranking retrieved contexts can significantly improve answer quality.
 
@@ -84,43 +83,42 @@ Specific challenges in academic document processing have been addressed by sever
 
 \subsection{Vector Databases and Similarity Search}
 
-The efficiency of vector similarity search is critical for RAG system scalability. Recent work by Wang et al.~\cite{wang2025vectordb} has highlighted the importance of rigorous testing methodologies for Vector Database Management Systems, identifying unique challenges in test input generation and oracle definition for high-dimensional vector data.
+The scalability of the RAG system depends on the effectiveness of the vector similarity analysis. Wang et al.'s recent study~\cite{wang2025vectordb}, which identified particular difficulties in test input generation and oracle definition for extremely large vector data, has emphasized the significance of rigorous testing procedures for Vector Database Management Systems.
 
-Qdrant~\cite{qdrant2023}, the vector database used in our system, implements efficient similarity search with support for hybrid queries combining vector and payload filtering. Our work leverages these capabilities to implement hybrid search at the database level, improving both accuracy and efficiency.
+Our system's vector database, Qdrant~\cite{qdrant2023}, offers efficient similarity search and supports hybrid queries that combine vector and payload filtering. In order to improve accuracy and efficiency, our work makes use of these characteristics to create hybrid search at the database level.
 
 \subsection{Summary and Positioning}
 
-While existing research has addressed individual components of RAG systems, few works have comprehensively addressed the unique challenges of academic document citation, particularly the combination of hybrid search, intelligent context selection, and adaptive chunking. Our work distinguishes itself by providing an integrated solution that addresses all these aspects simultaneously, with comprehensive empirical evaluation and ablation studies demonstrating the contribution of each component.
+Few studies have thoroughly examined the unusual difficulties of academic document citation, especially considering the combination of hybrid search, intelligent context selection, and adaptive chunking, although previous research has tackled individual RAG system components. Our approach sets itself apart by offering an integrated solution that takes care of all these factors at once, with thorough empirical evaluation and ablation tests showing each component's impact.
 
 %
 %
 \section{Methodology and Technical Depth}
-
-This section provides a detailed description of the FastCite system architecture, including mathematical formulations, algorithmic details, and design rationale for each component.
-
+The FastCite system architecture is described in detail in this section, along with mathematical formulas, algorithmic specifics, and design justifications for each part.
 \subsection{System Architecture}
 
-FastCite follows a comprehensive pipeline consisting of document ingestion, storage, and query processing stages. The system architecture is illustrated in Figure~\ref{fig:architecture}, showing the complete flow from document upload through answer generation.
+FastCite uses a complete pipeline that includes phases for query processing, document feeding, and storage. Figure~\ref{fig:architecture} depicts the entire flow from document upload to answer generation in the system architecture.
 
-\subsubsection{Document Ingestion Pipeline}
+\subsubsection{Pipeline for Document Ingestion}
 
-When a PDF document is uploaded, the system first checks for the presence of a table of contents (TOC). If a TOC exists, the document is processed using TOC-based chunking, which preserves the hierarchical structure of the document. For documents without TOC, a page-based chunking strategy with configurable overlap is employed. Each chunk is assigned a unique identifier and associated metadata including page ranges, headings, and hierarchical paths.
+When a PDF document is uploaded, the system first checks for the presence of a table of contents (TOC). The document is handled utilizing TOC-based chunking, which maintains the document's hierarchical structure, if a TOC is present. A page-based chunking approach with controllable overlap is used for publications without a TOC. A distinct identifier and related metadata, such as page ranges, headings, and hierarchical pathways, are given to each chunk.
 
-For each chunk, a mini PDF containing only the relevant pages is generated and stored in Backblaze B2 cloud storage for efficient retrieval during answer generation. The chunk text is then processed through the embedding generation pipeline.
+For each chunk, a small PDF with just the relevant pages is created and saved in Backblaze B2 cloud storage for quick access while creating an answer. The embedding generation pipeline is then used to process the chunk text.
 
-\subsubsection{Storage Architecture}
+\subsubsection{Architecture for Storage}
 
-FastCite employs a distributed storage architecture optimized for different data types:
+FastCite uses a distributed storage architecture that is tailored for many kinds of data:
 
-\textbf{Vector Storage (Qdrant):} Chunk embeddings generated using the all-mpnet-base-v2 model (768-dimensional vectors) are stored in Qdrant vector database along with rich payload metadata including chunk ID, book ID, book name, heading, path, page ranges, and content text. This enables efficient similarity search and filtering operations. The design addresses challenges identified in vector database management systems~\cite{wang2025vectordb}, particularly the need for efficient indexing strategies that support dynamic data scaling and hybrid query processing.
+\textbf{Qdrant Vector Storage:} The Qdrant vector database contains chunk embeddings created with the all-mpnet-base-v2 model (768-dimensional vectors) as well as extensive payload metadata like as chunk ID, book ID, book name, heading, path, page ranges, and content text. Effective similarity search and filtering activities are made possible by this. The approach addresses issues found in vector database management systems~\cite{wang2025vectordb}, including the requirement for effective indexing techniques that facilitate hybrid query processing and dynamic data scalability.
 
-\textbf{Document Storage (Backblaze B2):} Mini PDFs corresponding to each chunk are stored in Backblaze B2 cloud storage. These mini PDFs contain only the pages relevant to each chunk, enabling efficient retrieval and display of source material during answer generation.
+\textbf{Document Storage (Backblaze B2):} Each chunk's associated mini PDF is kept in Backblaze B2 cloud storage. In order to facilitate the efficient retrieval and display of source information during response production, these small PDFs only include the pages pertinent to each chunk.
 
-\textbf{Metadata Storage (MongoDB):} Document metadata including title, author, page count, TOC structure, and user associations are stored in MongoDB. This provides efficient querying and management of document collections, user permissions, and system state.
+\textbf{Metadata Storage (MongoDB):} MongoDB is used to store document metadata such as title, author, page count, TOC structure, and user associations.
+This makes it possible to query and manage document collections, user permissions, and system status efficiently.
 
-\subsubsection{Query Processing Pipeline}
+\subsubsection{Pipeline for Query Processing}
 
-When a user selects a PDF and submits a query, the system processes the request through the following stages:
+The following steps are taken by the system when a user chooses a PDF and submits a query:
 
 \textbf{Stage 1 - Query Embedding:} The user's prompt is converted into a 768-dimensional embedding vector using the same all-mpnet-base-v2 model used for document chunking, ensuring semantic consistency between queries and documents.
 
@@ -139,11 +137,11 @@ When a user selects a PDF and submits a query, the system processes the request 
 
 \subsection{Document Chunking Strategies}
 
-Academic documents exhibit significant structural diversity, requiring adaptive chunking strategies. We implement two distinct chunking approaches based on document structure.
+The structural variation of academic publications is significant, demanding the use of adaptive chunking techniques. Based on document structure, we employ two different chunking strategies.
 
-\subsubsection{Table of Contents-Based Chunking}
+\subsubsection{Chunking Based on the Table of Contents}
 
-For documents with table of contents (TOC), we employ a hierarchical chunking strategy that preserves document structure. Given a document $D$ with TOC entries $T = \{t_1, t_2, \ldots, t_n\}$, where each entry $t_i = (level_i, title_i, page_i)$, we create chunks that align with TOC boundaries.
+We use a hierarchical chunking method that maintains document structure for documents that have a table of contents (TOC). We construct chunks that conform to TOC bounds given a document $D$ with TOC entries $T = \{t_1, t_2, \ldots, t_n\}$, where each item $t_i = (level_i, title_i, page_i)$.
 
 For each TOC entry $t_i$, we define a chunk $C_i$ with:
 \begin{equation}
@@ -157,9 +155,9 @@ path_i = \bigcup_{j: level_j < level_i, page_j < page_i} title_j \rightarrow tit
 
 The text extraction process handles edge cases where headings appear mid-page, ensuring text above headings is correctly attributed to previous chunks. This preserves semantic coherence while maintaining structural boundaries.
 
-\subsubsection{Page-Based Chunking for Academic Papers}
+\subsubsection{Chunking Academic Papers Based on Pages}
 
-For documents without TOC (typically academic papers), we employ a sliding window approach with configurable page ranges and overlap. Given pages per chunk $p$ and overlap $o$, we create chunks with step size:
+We use a sliding window technique with adjustable page ranges and overlap for documents lacking a TOC, which are usually academic papers. We generate chunks with step size given pages per chunk $p$ and overlap $o$:
 \begin{equation}
 step\_size = \max(1, p - o)
 \end{equation}
@@ -174,7 +172,7 @@ Each chunk $C_k$ spans pages $[start_k, end_k]$ where:
 start_k = k \cdot step\_size, \quad end_k = \min(start_k + p - 1, N - 1)
 \end{equation}
 
-This approach ensures comprehensive coverage while maintaining context through overlap, critical for academic papers where concepts may span multiple pages.
+This method guarantees thorough coverage while preserving context through overlap, which is essential for academic publications where ideas could take up several pages.
 
 \subsection{Embedding Generation and Storage}
 
@@ -285,13 +283,14 @@ The generated answer is returned to the user along with references to the source
 
 \subsection{Design Rationale}
 
-Our system design decisions are based on empirical evaluation and practical considerations. The all-mpnet-base-v2 embedding model from sentence\_transformers~\cite{reimers2019sentence} provides an optimal balance between semantic understanding and computational efficiency, with 768-dimensional embeddings that are manageable for large-scale retrieval while maintaining high-quality semantic representations. This choice builds upon foundational work in word embeddings~\cite{mikolov2013word2vec,pennington2014glove} while leveraging modern transformer architectures for sentence-level understanding.
+Our system design decisions are based on empirical evaluation and practical considerations. With 768-dimensional embeddings that are manageable for large-scale retrieval while preserving high-quality semantic representations, the all-mpnet-base-v2 embedding model from sentence\_transformers~\cite{reimers2019sentence} offers an ideal compromise between semantic comprehension and computational efficiency. This decision leverages contemporary transformer architectures for sentence-level comprehension while building on fundamental work in word embeddings~\cite{mikolov2013word2vec,pennington2014glove}.
 
-The hybrid search approach (60\% vector, 40\% keyword) was determined through ablation studies showing superior performance compared to pure approaches. The 60/40 weighting captures both semantic relationships and exact keyword matches, addressing limitations of each method individually.
+Ablation experiments revealed that the hybrid search strategy (60\% vector, 40\% keyword) performed better than pure approaches. The 60/40 weighting addresses the shortcomings of each approach separately by capturing both semantic linkages and precise keyword matches.
 
 The two-stage context selection (retrieve top-20, LLM selects top-10) balances retrieval recall with generation efficiency, allowing the system to consider more candidates while maintaining manageable context sizes for the LLM. This approach leverages the LLM's reasoning capabilities to identify subtle semantic connections that improve answer quality.
 
-Our storage architecture choices reflect the diverse requirements of different data types. Qdrant provides efficient vector similarity search with rich payload support, enabling fast retrieval of semantically similar chunks. Recent research on vector database management systems~\cite{wang2025vectordb} has emphasized the importance of addressing unique testing challenges in VDBMS, including high-dimensional vector data handling and dynamic data scaling. Our system leverages Qdrant's in-memory capabilities for optimal query performance. Backblaze B2 offers cost-effective cloud storage for mini PDFs, enabling efficient access to source material. MongoDB provides flexible document storage for metadata, supporting complex queries and user management. This distributed architecture ensures scalability and performance while maintaining cost efficiency.
+The various needs of various data kinds are reflected in the storage architecture decisions we make. Fast retrieval of semantically related chunks is made possible by Qdrant's efficient vector similarity search with full payload support. The significance of tackling particular testing issues in vector database management systems (VDBMS), such as high-dimensional vector data processing and dynamic data scaling, has been highlighted by recent research on VDBMS~\cite{wang2025vectordb}. For the best query performance, our solution makes use of Qdrant's in-memory capabilities. Backblaze B2 provides affordable cloud storage for small PDFs, making source material easily accessible.
+MongoDB offers flexible document storage for metadata, facilitating user management and sophisticated queries. Scalability, performance, and cost-effectiveness are all guaranteed by this distributed architecture.
 
 %
 %
