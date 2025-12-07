@@ -1,0 +1,114 @@
+\relax 
+\@writefile{toc}{\contentsline {title}{FastCite: An Enhanced Retrieval-Augmented Generation System for Academic Document Citation with Hybrid Search and Intelligent Context Selection}{1}{}\protected@file@percent }
+\@writefile{toc}{\authcount {3}}
+\@writefile{toc}{\contentsline {author}{Aden Sial \and Inam Ullah Shaikh \and Emaan Fatima}{1}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{}\protected@file@percent }
+\citation{lewis2020retrieval}
+\citation{guu2020retrieval}
+\citation{izacard2022atlas}
+\citation{borgeaud2022improving}
+\citation{xiong2017end}
+\citation{formal2021splade}
+\citation{khattab2020colbert}
+\citation{xiong2021approximate}
+\citation{langchain2023}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Retrieval-Augmented Generation Systems}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Hybrid Search Methods}{3}{}\protected@file@percent }
+\citation{zhang2023adaptive}
+\citation{ding2023long}
+\citation{karpukhin2020dense}
+\citation{wang2023self}
+\citation{gao2023retrieval}
+\citation{cohan2020specter}
+\citation{beltagy2019scibert}
+\citation{lo2020s2orc}
+\citation{johnson2019billion}
+\citation{qdrant2023}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Document Chunking and Processing}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Context Selection and Ranking}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Academic Document Processing}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6}Vector Databases and Similarity Search}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.7}Summary and Positioning}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Methodology and Technical Depth}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}System Architecture}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Document Ingestion Pipeline}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Storage Architecture}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Query Processing Pipeline}{6}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Document Chunking Strategies}{6}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Table of Contents-Based Chunking}{6}{}\protected@file@percent }
+\citation{reimers2019sentence}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces FastCite system architecture showing the three-stage pipeline: document processing, hybrid retrieval, and answer generation.}}{7}{}\protected@file@percent }
+\newlabel{fig:architecture}{{1}{7}{}{figure.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Page-Based Chunking for Academic Papers}{7}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Embedding Generation and Storage}{8}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Hybrid Search Algorithm}{8}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Vector Search}{8}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Keyword Search}{8}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Score Normalization and Combination}{9}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Context Selection Mechanism}{9}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Answer Generation}{10}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}Design Rationale}{10}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experimental Setup and Results}{10}{}\protected@file@percent }
+\citation{papineni2002bleu}
+\citation{lin2004rouge}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Experimental Setup}{11}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Dataset}{11}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Evaluation Metrics}{11}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Baseline Systems}{11}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Comparative Results}{11}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Comparative performance of FastCite against baseline systems.}}{12}{}\protected@file@percent }
+\newlabel{tab:comparison}{{1}{12}{}{table.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Ablation Study}{12}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Hybrid Search Weight Analysis}{12}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Impact of hybrid search weight distribution on retrieval accuracy. Optimal performance achieved at 60\% vector, 40\% keyword.}}{12}{}\protected@file@percent }
+\newlabel{fig:hybrid_weights}{{2}{12}{}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Top-K Retrieval Analysis}{13}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Impact of top-k retrieval value on accuracy and response time. Top-20 retrieval with top-10 selection provides optimal balance.}}{13}{}\protected@file@percent }
+\newlabel{fig:topk}{{3}{13}{}{figure.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Context Selection Method Comparison}{13}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Comparison of context selection methods. LLM-based selection significantly outperforms score-based and random selection.}}{13}{}\protected@file@percent }
+\newlabel{fig:selection_method}{{4}{13}{}{figure.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Retrieval Method Comparison}{14}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Retrieval method performance across query types. Hybrid search consistently outperforms pure methods.}}{14}{}\protected@file@percent }
+\newlabel{fig:retrieval_method}{{5}{14}{}{figure.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Computational Efficiency Analysis}{14}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Accuracy vs Speed Trade-off}{14}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Time breakdown across system components. Hybrid retrieval and context selection contribute most to total time.}}{15}{}\protected@file@percent }
+\newlabel{fig:time_breakdown}{{6}{15}{}{figure.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Accuracy-speed trade-off analysis. FastCite achieves optimal balance at 0.82 precision with 2.5s response time.}}{15}{}\protected@file@percent }
+\newlabel{fig:accuracy_speed}{{7}{15}{}{figure.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Detailed Performance Analysis}{16}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Detailed performance metrics by document type and query complexity.}}{16}{}\protected@file@percent }
+\newlabel{tab:detailed_metrics}{{2}{16}{}{table.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Error Analysis}{16}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Discussion, Limitations and Future Work}{16}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Discussion}{16}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Limitations}{17}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Future Work}{17}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{18}{}\protected@file@percent }
+\bibcite{lewis2020retrieval}{1}
+\bibcite{guu2020retrieval}{2}
+\bibcite{izacard2022atlas}{3}
+\bibcite{borgeaud2022improving}{4}
+\bibcite{xiong2017end}{5}
+\bibcite{formal2021splade}{6}
+\bibcite{khattab2020colbert}{7}
+\bibcite{xiong2021approximate}{8}
+\bibcite{langchain2023}{9}
+\bibcite{zhang2023adaptive}{10}
+\bibcite{ding2023long}{11}
+\bibcite{karpukhin2020dense}{12}
+\@writefile{toc}{\contentsline {subsubsection}{Acknowledgments.}{19}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Disclosure of Interests.}{19}{}\protected@file@percent }
+\bibcite{wang2023self}{13}
+\bibcite{gao2023retrieval}{14}
+\bibcite{cohan2020specter}{15}
+\bibcite{beltagy2019scibert}{16}
+\bibcite{lo2020s2orc}{17}
+\bibcite{johnson2019billion}{18}
+\bibcite{qdrant2023}{19}
+\bibcite{reimers2019sentence}{20}
+\bibcite{papineni2002bleu}{21}
+\bibcite{lin2004rouge}{22}
+\gdef \@abspage@last{20}

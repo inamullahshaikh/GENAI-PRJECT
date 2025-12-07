@@ -1,0 +1,157 @@
+================================================================================
+FASTCITE RAG SYSTEM - PROMPT FILES
+================================================================================
+
+This file contains all prompts used in the FastCite system for model/code generation.
+All prompts are extracted from the codebase and demonstrate effective prompt engineering.
+
+================================================================================
+1. CONTEXT SELECTION PROMPT
+================================================================================
+Location: GENAI-PRJECT/fastcite_backend/src/celery_app/tasks.py
+Function: select_top_contexts_task()
+Lines: 843-854
+
+PROMPT:
+"""
+hey so you have {N} context passages here and a user query
+I need you to pick the top 10 most relevant ones that would help answer the question best
+
+USER QUERY: {user_query}
+
+here are the contexts:
+{contexts_text}
+
+just give me JSON format only:
+{"selected_ids": ["id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8", "id9", "id10"]}
+"""
+
+SYSTEM ROLE:
+"you're good at figuring out which contexts are actually relevant"
+
+================================================================================
+2. ANSWER GENERATION PROMPT - WITH DOCUMENT CONTEXTS
+================================================================================
+Location: GENAI-PRJECT/fastcite_backend/src/celery_app/tasks.py
+Function: process_contexts_and_generate_task()
+Lines: 1083-1088
+
+PROMPT:
+"""
+ok so use the context from the documents below to answer the question. if the context doesnt have what you need then you can use your general knowledge too
+{current_info}
+Context:
+{context_text}
+
+**User Question:** {user_query}
+"""
+
+SYSTEM PROMPT:
+"you're a helpful AI assistant. respond in markdown with headings and bullet points. for general stuff like greetings or current date/time just use your knowledge. when we give you current date/time info use it. dont say you cant answer - just give the best answer you can"
+
+================================================================================
+3. ANSWER GENERATION PROMPT - GENERAL KNOWLEDGE QUESTIONS
+================================================================================
+Location: GENAI-PRJECT/fastcite_backend/src/celery_app/tasks.py
+Function: process_contexts_and_generate_task()
+Lines: 1092-1096
+
+PROMPT:
+"""
+this is a general knowledge question so just use what you know, no need to look at documents
+{current_info}
+**User Question:** {user_query}
+
+give a helpful answer based on what you know and the current info above if it applies. dont mention anything about not finding stuff in documents
+"""
+
+SYSTEM PROMPT:
+"you're a helpful AI assistant. respond in markdown with headings and bullet points. for general stuff like greetings or current date/time just use your knowledge. when we give you current date/time info use it. dont say you cant answer - just give the best answer you can"
+
+================================================================================
+4. ANSWER GENERATION PROMPT - WITHOUT CONTEXTS
+================================================================================
+Location: GENAI-PRJECT/fastcite_backend/src/celery_app/tasks.py
+Function: process_contexts_and_generate_task()
+Lines: 1098-1100
+
+PROMPT:
+"""
+answer this using your general knowledge, dont reference any documents or sources
+{current_info}
+**User Question:** {user_query}
+"""
+
+SYSTEM PROMPT:
+"you're a helpful AI assistant. respond in markdown with headings and bullet points. for general stuff like greetings or current date/time just use your knowledge. when we give you current date/time info use it. dont say you cant answer - just give the best answer you can"
+
+================================================================================
+5. CURRENT INFORMATION TEMPLATE
+================================================================================
+Location: GENAI-PRJECT/fastcite_backend/src/celery_app/tasks.py
+Function: process_contexts_and_generate_task()
+Lines: 1067-1074
+
+TEMPLATE (injected when needed):
+"""
+**Current Information:**
+- todays date: {current_date}
+- current day: {current_day}
+- current time: {current_time}
+- current year: {current_year}
+
+use this info to answer accurately. if they ask about date/time/year use what we gave you above
+"""
+
+================================================================================
+6. CONTEXT FORMATTING
+================================================================================
+Location: GENAI-PRJECT/fastcite_backend/src/celery_app/tasks.py
+Function: process_contexts_and_generate_task()
+Lines: 1079-1082
+
+FORMAT:
+"""
+### {heading}
+{content}
+"""
+
+Each context is formatted with Markdown heading (###) followed by content.
+Multiple contexts are joined with double newlines (\n\n).
+
+================================================================================
+7. CONTEXT SELECTION FORMATTING
+================================================================================
+Location: GENAI-PRJECT/fastcite_backend/src/celery_app/tasks.py
+Function: select_top_contexts_task()
+Lines: 835-841
+
+FORMAT:
+"""
+ID: {context_id}
+Heading: {heading}
+Content: {content_preview}...
+"""
+
+Each context includes ID, heading, and content preview (truncated to 500 chars).
+Contexts are separated by "---" delimiter.
+
+================================================================================
+PROMPT ENGINEERING TECHNIQUES USED
+================================================================================
+
+1. Structured Output: JSON format for context selection ensures parseable responses
+2. Role Definition: System roles establish expertise and context
+3. Conditional Prompting: Different prompts based on query type and context availability
+4. Content Truncation: 500-character previews optimize token usage
+5. Format Specification: Markdown output format for readable responses
+6. Temporal Injection: Current date/time added when needed
+7. Fallback Instructions: Guidance when context is insufficient
+8. Clear Boundaries: Explicit do/don't instructions prevent confusion
+9. Positive Framing: Encourages helpful responses over refusals
+10. Query Type Detection: Pattern matching identifies general knowledge questions
+
+================================================================================
+END OF PROMPT FILES
+================================================================================
+
