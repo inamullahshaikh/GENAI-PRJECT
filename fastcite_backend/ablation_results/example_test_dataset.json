@@ -1,0 +1,19 @@
+{
+  "test_cases": [
+    {
+      "question": "What is the main topic of this book?",
+      "ground_truth": "The main topic of this book is machine learning and artificial intelligence.",
+      "book_id": null
+    },
+    {
+      "question": "Explain the key concepts discussed in chapter 1",
+      "ground_truth": "Chapter 1 introduces fundamental concepts including neural networks, backpropagation, and gradient descent.",
+      "book_id": null
+    },
+    {
+      "question": "What are the main findings or conclusions?",
+      "ground_truth": "The main findings suggest that deep learning models achieve superior performance on complex tasks.",
+      "book_id": null
+    }
+  ]
+}

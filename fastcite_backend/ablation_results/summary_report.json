@@ -1,0 +1,442 @@
+{
+  "total_experiments": 42,
+  "experiments_by_config": {
+    "hybrid_llm_based": 30,
+    "vector_only_llm_based": 3,
+    "keyword_only_llm_based": 3,
+    "hybrid_score_based": 3,
+    "hybrid_no_selection": 3
+  },
+  "average_metrics": {
+    "retrieval_time": 0.0698464314142863,
+    "selection_time": 4.071738413402012,
+    "generation_time": 9.40464422816322,
+    "total_time": 13.546229072979518,
+    "num_retrieved": 11.619047619047619,
+    "num_selected": 8.404761904761905,
+    "avg_retrieval_score": 0.35828280704293247,
+    "avg_selected_score": 0.39730153452775385
+  },
+  "experiments": [
+    {
+      "experiment_name": "baseline",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.17017340660095215,
+      "selection_time": 3.370516300201416,
+      "generation_time": 2.4169797897338867,
+      "total_time": 5.957669496536255,
+      "num_retrieved": 14,
+      "num_selected": 9
+    },
+    {
+      "experiment_name": "retrieval_vector_only",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.03375673294067383,
+      "selection_time": 2.800093650817871,
+      "generation_time": 4.36015772819519,
+      "total_time": 7.194008111953735,
+      "num_retrieved": 14,
+      "num_selected": 9
+    },
+    {
+      "experiment_name": "retrieval_keyword_only",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.04868006706237793,
+      "selection_time": 0.6845626831054688,
+      "generation_time": 2.4824438095092773,
+      "total_time": 3.215686559677124,
+      "num_retrieved": 1,
+      "num_selected": 1
+    },
+    {
+      "experiment_name": "retrieval_hybrid_50_50",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.09087491035461426,
+      "selection_time": 3.3162310123443604,
+      "generation_time": 41.54969048500061,
+      "total_time": 44.956796407699585,
+      "num_retrieved": 14,
+      "num_selected": 9
+    },
+    {
+      "experiment_name": "retrieval_hybrid_70_30",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.06815457344055176,
+      "selection_time": 1.8549566268920898,
+      "generation_time": 2.9557464122772217,
+      "total_time": 4.878857612609863,
+      "num_retrieved": 14,
+      "num_selected": 9
+    },
+    {
+      "experiment_name": "retrieval_hybrid_80_20",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.05926871299743652,
+      "selection_time": 4.047396898269653,
+      "generation_time": 2.2558228969573975,
+      "total_time": 6.362488508224487,
+      "num_retrieved": 14,
+      "num_selected": 9
+    },
+    {
+      "experiment_name": "retrieval_hybrid_90_10",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.07952666282653809,
+      "selection_time": 2.9732561111450195,
+      "generation_time": 3.943138360977173,
+      "total_time": 6.9959211349487305,
+      "num_retrieved": 14,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "selection_score_based",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.08699750900268555,
+      "selection_time": 1.0251998901367188e-05,
+      "generation_time": 4.087628126144409,
+      "total_time": 4.174635887145996,
+      "num_retrieved": 14,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "selection_no_selection",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.06759262084960938,
+      "selection_time": 9.5367431640625e-07,
+      "generation_time": 37.952879905700684,
+      "total_time": 38.02047348022461,
+      "num_retrieved": 10,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "topk_5",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.06127786636352539,
+      "selection_time": 2.0887720584869385,
+      "generation_time": 3.59662127494812,
+      "total_time": 5.746671199798584,
+      "num_retrieved": 14,
+      "num_selected": 5
+    },
+    {
+      "experiment_name": "topk_15",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.09024953842163086,
+      "selection_time": 4.286514520645142,
+      "generation_time": 3.375359058380127,
+      "total_time": 7.752123117446899,
+      "num_retrieved": 14,
+      "num_selected": 14
+    },
+    {
+      "experiment_name": "topk_20",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.04378390312194824,
+      "selection_time": 3.5650155544281006,
+      "generation_time": 3.205749034881592,
+      "total_time": 6.814548492431641,
+      "num_retrieved": 14,
+      "num_selected": 14
+    },
+    {
+      "experiment_name": "filtering_threshold_0.3",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.05987882614135742,
+      "selection_time": 2.6805191040039062,
+      "generation_time": 37.72764301300049,
+      "total_time": 40.46804094314575,
+      "num_retrieved": 9,
+      "num_selected": 9
+    },
+    {
+      "experiment_name": "filtering_threshold_0.5",
+      "query": "What is the main topic of this book?",
+      "retrieval_time": 0.07268476486206055,
+      "selection_time": 0.8204555511474609,
+      "generation_time": 3.5950894355773926,
+      "total_time": 4.488229751586914,
+      "num_retrieved": 1,
+      "num_selected": 1
+    },
+    {
+      "experiment_name": "baseline",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.08352398872375488,
+      "selection_time": 3.1515932083129883,
+      "generation_time": 6.52611517906189,
+      "total_time": 9.761232376098633,
+      "num_retrieved": 14,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "retrieval_vector_only",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.05465507507324219,
+      "selection_time": 3.314196825027466,
+      "generation_time": 1.703852653503418,
+      "total_time": 5.072704553604126,
+      "num_retrieved": 14,
+      "num_selected": 9
+    },
+    {
+      "experiment_name": "retrieval_keyword_only",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.030689477920532227,
+      "selection_time": 1.149273157119751,
+      "generation_time": 43.03416442871094,
+      "total_time": 44.21412706375122,
+      "num_retrieved": 4,
+      "num_selected": 4
+    },
+    {
+      "experiment_name": "retrieval_hybrid_50_50",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.07681107521057129,
+      "selection_time": 3.439101457595825,
+      "generation_time": 1.4671833515167236,
+      "total_time": 4.98309588432312,
+      "num_retrieved": 14,
+      "num_selected": 9
+    },
+    {
+      "experiment_name": "retrieval_hybrid_70_30",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.055484771728515625,
+      "selection_time": 3.034186840057373,
+      "generation_time": 6.357793569564819,
+      "total_time": 9.447465181350708,
+      "num_retrieved": 14,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "retrieval_hybrid_80_20",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.04473304748535156,
+      "selection_time": 3.0206191539764404,
+      "generation_time": 2.141843557357788,
+      "total_time": 5.20719575881958,
+      "num_retrieved": 14,
+      "num_selected": 9
+    },
+    {
+      "experiment_name": "retrieval_hybrid_90_10",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.11372137069702148,
+      "selection_time": 3.670835018157959,
+      "generation_time": 36.84748840332031,
+      "total_time": 40.63204479217529,
+      "num_retrieved": 14,
+      "num_selected": 9
+    },
+    {
+      "experiment_name": "selection_score_based",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.10274934768676758,
+      "selection_time": 1.0251998901367188e-05,
+      "generation_time": 6.868998765945435,
+      "total_time": 6.9717583656311035,
+      "num_retrieved": 14,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "selection_no_selection",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.05536365509033203,
+      "selection_time": 1.430511474609375e-06,
+      "generation_time": 5.254342555999756,
+      "total_time": 5.3097076416015625,
+      "num_retrieved": 10,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "topk_5",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.060657501220703125,
+      "selection_time": 2.4990763664245605,
+      "generation_time": 1.2645444869995117,
+      "total_time": 3.8242783546447754,
+      "num_retrieved": 14,
+      "num_selected": 5
+    },
+    {
+      "experiment_name": "topk_15",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.06690216064453125,
+      "selection_time": 3.618744373321533,
+      "generation_time": 3.333240032196045,
+      "total_time": 7.018886566162109,
+      "num_retrieved": 14,
+      "num_selected": 13
+    },
+    {
+      "experiment_name": "topk_20",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.05223655700683594,
+      "selection_time": 5.102945327758789,
+      "generation_time": 30.896544694900513,
+      "total_time": 36.05172657966614,
+      "num_retrieved": 14,
+      "num_selected": 13
+    },
+    {
+      "experiment_name": "filtering_threshold_0.3",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.07052206993103027,
+      "selection_time": 8.575160503387451,
+      "generation_time": 6.0260396003723145,
+      "total_time": 14.671722173690796,
+      "num_retrieved": 6,
+      "num_selected": 6
+    },
+    {
+      "experiment_name": "filtering_threshold_0.5",
+      "query": "Explain the key concepts discussed in chapter 1",
+      "retrieval_time": 0.06165599822998047,
+      "selection_time": 0.7815427780151367,
+      "generation_time": 4.798968076705933,
+      "total_time": 5.64216685295105,
+      "num_retrieved": 2,
+      "num_selected": 2
+    },
+    {
+      "experiment_name": "baseline",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.09899091720581055,
+      "selection_time": 3.2422845363616943,
+      "generation_time": 3.5539472103118896,
+      "total_time": 6.8952226638793945,
+      "num_retrieved": 14,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "retrieval_vector_only",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.039305686950683594,
+      "selection_time": 3.3007733821868896,
+      "generation_time": 33.07609462738037,
+      "total_time": 36.416173696517944,
+      "num_retrieved": 14,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "retrieval_keyword_only",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.04282236099243164,
+      "selection_time": 3.711884021759033,
+      "generation_time": 2.3194069862365723,
+      "total_time": 6.074113368988037,
+      "num_retrieved": 1,
+      "num_selected": 1
+    },
+    {
+      "experiment_name": "retrieval_hybrid_50_50",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.056967973709106445,
+      "selection_time": 5.679663419723511,
+      "generation_time": 5.34975528717041,
+      "total_time": 11.086386680603027,
+      "num_retrieved": 14,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "retrieval_hybrid_70_30",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.11051225662231445,
+      "selection_time": 4.2799742221832275,
+      "generation_time": 4.253187417984009,
+      "total_time": 8.64367389678955,
+      "num_retrieved": 14,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "retrieval_hybrid_80_20",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.0799713134765625,
+      "selection_time": 3.201774835586548,
+      "generation_time": 2.8080549240112305,
+      "total_time": 6.089801073074341,
+      "num_retrieved": 14,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "retrieval_hybrid_90_10",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.05550503730773926,
+      "selection_time": 29.456367254257202,
+      "generation_time": 3.1042909622192383,
+      "total_time": 32.61616325378418,
+      "num_retrieved": 14,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "selection_score_based",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.08297276496887207,
+      "selection_time": 7.62939453125e-06,
+      "generation_time": 8.327697038650513,
+      "total_time": 8.410677433013916,
+      "num_retrieved": 14,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "selection_no_selection",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.05196809768676758,
+      "selection_time": 1.6689300537109375e-06,
+      "generation_time": 4.191695213317871,
+      "total_time": 4.243664979934692,
+      "num_retrieved": 10,
+      "num_selected": 10
+    },
+    {
+      "experiment_name": "topk_5",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.047562599182128906,
+      "selection_time": 1.9343054294586182,
+      "generation_time": 4.3648481369018555,
+      "total_time": 6.3467161655426025,
+      "num_retrieved": 14,
+      "num_selected": 5
+    },
+    {
+      "experiment_name": "topk_15",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.0948634147644043,
+      "selection_time": 3.8917675018310547,
+      "generation_time": 3.239132881164551,
+      "total_time": 7.22576379776001,
+      "num_retrieved": 14,
+      "num_selected": 14
+    },
+    {
+      "experiment_name": "topk_20",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.06531715393066406,
+      "selection_time": 30.138444900512695,
+      "generation_time": 4.721916198730469,
+      "total_time": 34.92567825317383,
+      "num_retrieved": 14,
+      "num_selected": 4
+    },
+    {
+      "experiment_name": "filtering_threshold_0.3",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.08567166328430176,
+      "selection_time": 7.069148540496826,
+      "generation_time": 3.431962251663208,
+      "total_time": 10.586782455444336,
+      "num_retrieved": 8,
+      "num_selected": 8
+    },
+    {
+      "experiment_name": "filtering_threshold_0.5",
+      "query": "What are the main findings or conclusions?",
+      "retrieval_time": 0.05851268768310547,
+      "selection_time": 1.2610280513763428,
+      "generation_time": 2.2269997596740723,
+      "total_time": 3.5465404987335205,
+      "num_retrieved": 6,
+      "num_selected": 3
+    }
+  ]
+}
