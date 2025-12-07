@@ -23,14 +23,14 @@
 %
 \titlerunning{FastCite: RAG-Based Study Assistant}
 %
-\author{Inam Ullah Shaikh\inst{1} \and
-Emaan Fatima\inst{1} \and
-Aden Sial\inst{1}}
+\author{Aden Sial\inst{1} \and
+Inam Ullah Shaikh\inst{1} \and
+Emaan Fatima\inst{1}}
 %
-\authorrunning{Inam, Emaan, Aden}
+\authorrunning{A. Sial et al.}
 %
 \institute{National University of Computing and Emerging Sciences, Islamabad, Pakistan\\
-\email{\{i220857, i220869, i221313\}@nu.edu.pk}}
+\email{\{22i-1313, 22i-0857, 22i-0869\}@nu.edu.pk}}
 %
 \maketitle
 %
@@ -43,11 +43,8 @@ Retrieval-Augmented Generation (RAG) systems have emerged as a powerful paradigm
 %
 \section{Introduction}
 There are plenty of digital learning resources available to students today, which include lecture notes and textbooks to research papers and study guides. While the variety of resources offers previously unobtainable learning opportunities, it also brings significant challenges: students find it difficult to find relevant data quickly, comprehend difficult concepts, and receive specific study assistance. Students find it challenging to ask natural questions or find information when they don't know the exact terminology because traditional search tools require exact keyword matches. Although study chatbots and AI assistants have shown potential, current implementations frequently give generic answers or are unable to accurately retrieve information from students' particular course materials.
-
 A potentially successful approach that combines the benefits of information retrieval systems with the generative powers of LLMs is Retrieval-Augmented Generation (RAG)~\cite{lewis2020retrieval}. RAG systems can produce precise, well-founded answers while retaining access to current data by obtaining relevant document passages and using them as context for language models. By retrieving relevant sections from course materials and using these passages to generate contextualized answers, this approach offers a powerful solution for creating intelligent study assistants that can respond to questions based on students' uploaded documents, offering customized, accurate study support. However, when used in educational settings, current RAG implementations encounter a number of significant difficulties. First, students' study materials have a variety of structures, from unstructured lecture notes and other PDF formats to well-organized textbooks with a table of contents, necessitating the use of adaptive chunking techniques. Second, in addition to occasionally needing to locate specific terms or definitions, students ask questions in natural, conversational language that might not match exact keywords in documents. Retrieval accuracy is still not at its best; both semantic comprehension and keyword precision are needed, as pure semantic search misses exact keyword matches and pure keyword search fails to capture semantic similarity. Third, the system may appear sluggish and unresponsive during study sessions due to the computational overhead of processing a large number of retrieved contexts.
-
 This paper presents FastCite, a chatbot that uses AI to help students learn from their course materials by intelligently responding to their questions. Our system contributes significantly to educational AI in a number of ways. First, we suggest a hybrid search method that cleverly blends keyword-based retrieval (40\%) and semantic vector search (60\%), enabling students to ask questions organically while still finding precise information when needed. With this method, students can ask questions like "how does machine learning work?" and receive pertinent answers even if the document uses different phrasing. They can also find specific definitions when they look up specific terms. In order to ensure that students receive targeted, beneficial responses free of information overload, we also present an LLM-based context selection method that evaluates a broader set of retrieved study materials (top-20) and effectively chooses the most relevant portion (top-10) before generating answers. Third, we create flexible document chunking techniques that manage both organized documents with table of contents, unstructured resources like class notes, and other types of PDF documents, guaranteeing the most effective data retrieval across a variety of study guides. Fourth, in order to provide evidence for the ideal study assistant configuration, we perform extensive ablation experiments that look at the effects of several hyperparameters, such as retrieval top-k values, hybrid search weight distributions, and context selection techniques.
-
 This is how the rest of the paper is structured. Section 2 examines relevant research in academic document processing, RAG systems, educational chatbots, and hybrid search techniques. Our methodology, which includes thorough explanations of the hybrid search algorithm, context selection mechanism, document chunking techniques, and mathematical formulations, is presented in Section 3. Our experimental setup, evaluation measures, and extensive results, including detailed ablation investigations and comparisons with baseline systems, are described in Section 4. The implications of our findings, system limitations, and future research directions are covered in Section 5. The paper is concluded in Section 6 with a summary of the main conclusions and their implications for the advancement of educational AI.
 %
 %
@@ -172,8 +169,7 @@ This method guarantees thorough coverage while preserving context through overla
 
 \subsection{Embedding Generation and Storage}
 
-We used the all-mpnet-base-v2 model (dimension size $=768$) from the sentence-transformers library~\cite{reimers2019sentence} to create embeddings of the document chunks. The generation of word embeddings has evolved from early stages like Word2Vec~\cite{mikolov2013word2vec} and GloVe~\cite{pennington2014glove} to modern transformer-based sentence embeddings.
-
+We employ the all-mpnet-base-v2 model from the sentence\_transformers library~\cite{reimers2019sentence} for generating document embeddings. This model produces 768-dimensional vectors optimized for semantic similarity tasks. The development of word embeddings has evolved from early approaches like Word2Vec~\cite{mikolov2013word2vec} and GloVe~\cite{pennington2014glove} to modern transformer-based sentence embeddings.
 
 For a text chunk $C$ with content $text_C$, the embedding vector $\mathbf{e}_C$ is computed as:
 \begin{equation}
@@ -189,21 +185,18 @@ This normalization ensures cosine similarity computations are efficient and nume
 
 Each embedding vector is stored in Qdrant along with a rich payload containing:
 \begin{equation}
-\begin{split}
-\mathrm{payload}(C) = \{&\mathrm{chunk\_id}, \mathrm{book\_id}, \mathrm{book\_name}, \mathrm{heading}, \\
-&\mathrm{path}, \mathrm{start\_page}, \mathrm{end\_page}, \mathrm{content}, \mathrm{level}\}
-\end{split}
+\mathrm{payload}(C) = \{chunk\_id, book\_id, book\_name, heading, path, start\_page, end\_page, content, level\}
 \end{equation}
 
-During query processing, this payload facilitates effective document filtering, hierarchical navigation, and associated metadata retrieval. Qdrant's vector collection indexes the payloads and embeddings, allowing for sub-millisecond similarity searches even over millions of pieces.
+This payload enables efficient filtering by document, hierarchical navigation, and retrieval of associated metadata during query processing. The embeddings and payloads are indexed in Qdrant's vector collection, enabling sub-millisecond similarity search even across millions of chunks.
 
 \subsection{Hybrid Search Algorithm}
 
-The system first uses the same all-mpnet-base-v2 model to transform a query prompt into an embedding vector when a user chooses a PDF. The shortcomings of each method separately are then addressed by our hybrid search, which combines keyword-based retrieval and semantic vector search.
+When a user selects a PDF and enters a query prompt, the system first converts the prompt into an embedding vector using the same all-mpnet-base-v2 model. Our hybrid search then combines semantic vector search with keyword-based retrieval, addressing limitations of each approach individually.
 
 \subsubsection{Vector Search}
 
-Using cosine similarity in Qdrant, we extract top-$k$ chunks from the chosen page given a user query $q$ with embedding $\mathbf{e}_q$ (calculated using the same MPNet model):
+Given a user query $q$ with embedding $\mathbf{e}_q$ (computed using the same MPNet model), we retrieve top-$k$ chunks from the selected document using cosine similarity in Qdrant:
 \begin{equation}
 \mathrm{sim}_v(C_i, q) = \frac{\mathbf{e}_{C_i} \cdot \mathbf{e}_q}{||\mathbf{e}_{C_i}|| \cdot ||\mathbf{e}_q||}
 \end{equation}
@@ -212,8 +205,10 @@ Vector search returns results $R_v = \{(C_i, s_i^v)\}$ where $s_i^v$ is the cosi
 
 \subsubsection{Keyword Search}
 
-We use a straightforward tokenization and filtering method to extract keywords from the query:
-\begin{equation}mathrm{keywords}(k) = w: w \in \mathrm{tokenize}(k), |w| > 2, w \notin \mathrm{stopwords} \end{equation}
+We extract keywords from the query using a simple tokenization and filtering approach:
+\begin{equation}
+\mathrm{keywords}(q) = \{w : w \in \mathrm{tokenize}(q), |w| > 2, w \notin \mathrm{stopwords}\}
+\end{equation}
 
 For each chunk $C_i$ with content $text_i$, we calculate a keyword score based on term frequency and coverage:
 \begin{equation}
@@ -294,7 +289,7 @@ MongoDB offers flexible document storage for metadata, facilitating user managem
 %
 \section{Experimental Setup and Results}
 
-Our experimental approach, assessment metrics, dataset features, and thorough findings, including comparison analysis and ablation investigations, are all covered in this part.
+This section describes our experimental methodology, evaluation metrics, dataset characteristics, and comprehensive results including comparative analysis and ablation studies.
 
 \subsection{Experimental Setup}
 
@@ -306,15 +301,15 @@ For evaluation, we tested on a set of around 100 queries covering various questi
 
 \subsubsection{Evaluation Metrics}
 
-To thoroughly assess system performance, we use a variety of metrics:
+We employ multiple metrics to comprehensively evaluate system performance:
 
-\textbf{Retrieval Accuracy:} For recovered contexts, where expert annotation determines relevance, we assess precision@k, recall@k, and F1@k.
+\textbf{Retrieval Accuracy:} We measure precision@k, recall@k, and F1@k for retrieved contexts, where relevance is determined by expert annotation.
 
-\textbf{Answer Quality:} We employ ROUGE-L~\cite{lin2004rouge} for answer-reference overlap and BLEU scores~\cite{papineni2002bleu} for answer-text similarity. We also use human evaluation for citation quality, accuracy, and answer relevancy on a 5-point scale.
+\textbf{Answer Quality:} We use BLEU scores~\cite{papineni2002bleu} for answer-text similarity and ROUGE-L~\cite{lin2004rouge} for answer-reference overlap. Additionally, we employ human evaluation on a 5-point scale for answer relevance, accuracy, and citation quality.
 
-\textbf{Computational Efficiency:} We calculate the average query response time, taking into account the phases of generation, context selection, and retrieval. For cost analysis, we also monitor token usage and API call counts.
+\textbf{Computational Efficiency:} We measure average query response time, including retrieval, context selection, and generation phases. We also track token usage and API call counts for cost analysis.
 
-\textbf{Citation Accuracy:} Verified against ground truth, we calculate the proportion of generated responses that accurately cite source documents and page numbers.
+\textbf{Citation Accuracy:} We measure the percentage of generated answers that correctly cite source documents and page numbers, verified against ground truth.
 
 \subsubsection{Baseline Systems}
 
@@ -330,10 +325,10 @@ We compare FastCite against several baseline approaches:
 
 \subsection{Comparative Results}
 
-Comprehensive comparison results for all evaluation metrics are shown in Table~\ref{tab:comparison}.
+Table~\ref{tab:comparison} presents comprehensive comparison results across all evaluation metrics.
 
 \begin{table}
-\caption{Comparative performance of FastCite against other systems.}
+\caption{Comparative performance of FastCite against baseline systems.}
 \label{tab:comparison}
 \begin{tabular}{|l|c|c|c|c|c|}
 \hline
@@ -348,14 +343,15 @@ No Selection & 0.75 & 0.75 & 0.51 & 0.58 & 3.2 \\
 \end{tabular}
 \end{table}
 
-In every metric, FastCite performs better than the competitors. The hybrid search methodology (0.82 precision@10), which outperforms pure vector (0.72) and pure keyword (0.65) methods, highlights the importance of combining semantic and keyword information. The intelligent context selection strategy improves answer quality (BLEU 0.56 vs. 0.51 for no selection) while maintaining tolerable response times (2.5s vs. 3.2s).
+FastCite achieves superior performance across all metrics. The hybrid search approach (0.82 precision@10) significantly outperforms pure vector (0.72) and pure keyword (0.65) methods, demonstrating the value of combining semantic and keyword signals. The intelligent context selection mechanism contributes to improved answer quality (BLEU 0.56 vs 0.51 for no selection) while maintaining reasonable response times (2.5s vs 3.2s).
 
 \subsection{Ablation Study}
 
-To determine the best hyperparameter combinations and comprehend the role of each system component, we do extensive ablation investigations.
+We conduct comprehensive ablation studies to understand the contribution of each system component and identify optimal hyperparameter configurations.
+
 \subsubsection{Hybrid Search Weight Analysis}
 
-The effect of different vector and keyword weights on retrieval accuracy is depicted in Figure~\ref{fig:hybrid_weights}. We tested weight combinations from pure vector (1.0, 0.0) to pure keyword (0.0, 1.0) in 0.1 increments.
+Figure~\ref{fig:hybrid_weights} shows the impact of varying vector and keyword weights on retrieval accuracy. We tested weight combinations from pure vector (1.0, 0.0) to pure keyword (0.0, 1.0) in 0.1 increments.
 
 \begin{figure}
 \centering
