@@ -12,9 +12,10 @@
 \usepackage{url}
 %
 % If you use the hyperref package, please uncomment the following two lines
-% \usepackage{color}
-% \renewcommand\UrlFont{\color{blue}\rmfamily}
-% \urlstyle{rm}
+\usepackage{color}
+\usepackage{hyperref}
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+\urlstyle{rm}
 %
 \begin{document}
 %
@@ -45,7 +46,7 @@ The proliferation of digital learning materials has created unprecedented opport
 
 Students today face an overwhelming amount of digital learning materials, from textbooks and lecture notes to research papers and study guides. While this abundance of resources provides unprecedented learning opportunities, it also creates significant challenges: students struggle to quickly find relevant information, understand complex concepts, and get personalized help when studying. Traditional search tools require exact keyword matches, making it difficult for students to ask questions naturally or find information when they don't know the precise terminology. Study chatbots and AI assistants have emerged as promising solutions, but existing implementations often provide generic responses or fail to accurately retrieve information from students' specific course materials.
 
-The emergence of Retrieval-Augmented Generation (RAG) systems offers a powerful approach to building intelligent study assistants that can answer questions based on students' uploaded documents. By retrieving relevant passages from course materials and using them to generate contextualized answers, RAG systems can provide personalized, accurate study support. However, existing RAG implementations face several critical challenges when applied to educational scenarios. First, students' study materials exhibit diverse structures ranging from well-organized textbooks with table of contents to unstructured lecture notes and various other PDF formats, requiring adaptive processing strategies. Second, students ask questions in natural, conversational language that may not match exact keywords in documents, while also sometimes needing to find specific terms or definitions, requiring both semantic understanding and keyword precision. Third, the computational overhead of processing large numbers of retrieved contexts can significantly impact response time, making the system feel slow and unresponsive during study sessions.
+Retrieval-Augmented Generation (RAG)~\cite{lewis2020retrieval} has emerged as a promising solution that combines the strengths of information retrieval systems with the generative capabilities of LLMs. By retrieving relevant document passages and providing them as context to language models, RAG systems can generate accurate, grounded responses while maintaining access to up-to-date information. This approach offers a powerful solution for building intelligent study assistants that can answer questions based on students' uploaded documents, providing personalized, accurate study support by retrieving relevant passages from course materials and using them to generate contextualized answers. However, existing RAG implementations face several critical challenges when applied to educational scenarios. First, students' study materials exhibit diverse structures ranging from well-organized textbooks with table of contents to unstructured lecture notes and various other PDF formats, requiring adaptive chunking strategies. Second, students ask questions in natural, conversational language that may not match exact keywords in documents, while also sometimes needing to find specific terms or definitions. Retrieval accuracy remains suboptimal, with pure semantic search missing exact keyword matches and pure keyword search failing to capture semantic similarity, requiring both semantic understanding and keyword precision. Third, the computational overhead of processing large numbers of retrieved contexts can significantly impact response time, making the system feel slow and unresponsive during study sessions.
 
 This paper introduces FastCite, an AI-powered study assistant chatbot specifically designed to help students learn from their course materials through intelligent question answering. Our system makes several key contributions to educational AI. First, we propose a hybrid search mechanism that intelligently combines semantic vector search (60\%) with keyword-based retrieval (40\%), allowing students to ask questions naturally while still finding exact information when needed. This approach enables students to ask "how does machine learning work?" and get relevant answers even if the document uses different phrasing, while also finding specific definitions when they search for exact terms. Second, we introduce an LLM-based context selection mechanism that processes a larger set of retrieved study materials (top-20) and intelligently selects the most relevant subset (top-10) before generating answers, ensuring students receive focused, helpful responses without information overload. Third, we develop adaptive document chunking strategies that handle both structured documents with table of contents and unstructured materials like lecture notes, as well as various other PDF document types, ensuring optimal information retrieval across diverse study materials. Fourth, we conduct comprehensive ablation studies examining the impact of various hyperparameters including retrieval top-k values, hybrid search weight distributions, and context selection methods, providing empirical evidence for optimal study assistant configuration.
 
@@ -61,35 +62,29 @@ The field of Retrieval-Augmented Generation has witnessed significant advancemen
 
 Lewis et al.~\cite{lewis2020retrieval} introduced the foundational RAG architecture, demonstrating how retrieval mechanisms can enhance language model performance by providing external knowledge sources. Their work established the two-stage paradigm of retrieval followed by generation, which has become the standard approach in subsequent RAG implementations. Guu et al.~\cite{guu2020retrieval} extended this work by proposing REALM, a system that jointly trains retrieval and reading components, achieving improved performance on open-domain question answering tasks.
 
-More recently, Izacard et al.~\cite{izacard2022atlas} presented ATLAS, a retrieval-augmented language model that demonstrates strong few-shot learning capabilities across multiple knowledge-intensive tasks. Their work highlights the importance of fine-tuning retrieval models on task-specific data. Borgeaud et al.~\cite{borgeaud2022improving} introduced RETRO, a retrieval-enhanced transformer that incorporates retrieved passages at every layer, showing significant improvements in language modeling perplexity and downstream task performance.
+More recently, several works have extended the foundational RAG architecture, demonstrating the importance of fine-tuning retrieval models on task-specific data and incorporating retrieved passages at multiple layers.
 
 \subsection{Hybrid Search Methods}
 
-The combination of semantic and keyword-based search has been explored in various information retrieval contexts. Xiong et al.~\cite{xiong2017end} proposed an end-to-end neural ranking model that learns to combine multiple signals, demonstrating improvements over traditional BM25 baselines. Formal et al.~\cite{formal2021splade} introduced SPLADE, a sparse retrieval method that learns term importance, bridging the gap between dense and sparse retrieval approaches.
-
-Khattab and Zaharia~\cite{khattab2020colbert} developed ColBERT, a late interaction model that computes fine-grained interactions between query and document tokens, achieving state-of-the-art results on passage retrieval tasks. Their work demonstrates the effectiveness of combining semantic understanding with token-level matching. Xiong et al.~\cite{xiong2021approximate} further explored approximate nearest neighbor search for dense retrieval, addressing scalability challenges in large-scale retrieval systems.
+The combination of semantic and keyword-based search has been explored in various information retrieval contexts. Formal et al.~\cite{formal2021splade} introduced SPLADE, a sparse retrieval method that learns term importance, bridging the gap between dense and sparse retrieval approaches. Khattab and Zaharia~\cite{khattab2020colbert} developed ColBERT, a late interaction model that computes fine-grained interactions between query and document tokens, achieving state-of-the-art results on passage retrieval tasks. Their work demonstrates the effectiveness of combining semantic understanding with token-level matching.
 
 \subsection{Document Chunking and Processing}
 
-Effective document chunking is crucial for RAG system performance, as it determines the granularity of retrievable information. LangChain~\cite{langchain2023} provides various chunking strategies including fixed-size, recursive, and semantic chunking. However, academic documents present unique challenges due to their hierarchical structure and varying formats.
-
-Zhang et al.~\cite{zhang2023adaptive} proposed adaptive chunking strategies that consider document structure and semantic boundaries, showing improvements in retrieval accuracy. Their work emphasizes the importance of preserving document structure during chunking. Ding et al.~\cite{ding2023long} explored long-context language models and their implications for document processing, suggesting that larger context windows may reduce the need for aggressive chunking.
+Effective document chunking is crucial for RAG system performance, as it determines the granularity of retrievable information. However, academic documents present unique challenges due to their hierarchical structure and varying formats. Zhang et al.~\cite{zhang2023adaptive} proposed adaptive chunking strategies that consider document structure and semantic boundaries, showing improvements in retrieval accuracy. Their work emphasizes the importance of preserving document structure during chunking. For academic documents with thousands of pages, effective chunking remains essential for maintaining retrieval precision.
 
 \subsection{Context Selection and Ranking}
 
 The problem of selecting the most relevant contexts from a larger retrieved set has been addressed in various ways. Karpukhin et al.~\cite{karpukhin2020dense} introduced Dense Passage Retrieval (DPR), demonstrating that dense embeddings can outperform traditional sparse retrieval methods. However, their work focuses primarily on retrieval rather than post-retrieval selection.
 
-Wang et al.~\cite{wang2023self} proposed self-consistency methods for improving RAG system reliability, including techniques for context re-ranking. Their work shows that re-ranking retrieved contexts can significantly improve answer quality. Gao et al.~\cite{gao2023retrieval} explored retrieval-augmented generation for knowledge-intensive tasks, emphasizing the importance of retrieval quality in overall system performance.
+Wang et al.~\cite{wang2023self} proposed self-consistency methods for improving RAG system reliability, including techniques for context re-ranking. Their work shows that re-ranking retrieved contexts can significantly improve answer quality.
 
 \subsection{Academic Document Processing}
 
-Specific challenges in academic document processing have been addressed by several researchers. Cohan et al.~\cite{cohan2020specter} introduced SPECTER, a document-level embedding model trained on scientific papers, demonstrating improved performance on citation prediction tasks. Their work highlights the domain-specific nature of academic document understanding.
-
-Beltagy et al.~\cite{beltagy2019scibert} developed SciBERT, a BERT model pre-trained on scientific text, showing improvements on various scientific NLP tasks. Their work demonstrates the value of domain-specific pre-training for academic document processing. Lo et al.~\cite{lo2020s2orc} created the S2ORC dataset, a large-scale corpus of academic papers, facilitating research in academic document understanding and citation.
+Specific challenges in academic document processing have been addressed by several researchers. Cohan et al.~\cite{cohan2020specter} introduced SPECTER, a document-level embedding model trained on scientific papers, demonstrating improved performance on citation prediction tasks. Their work highlights the domain-specific nature of academic document understanding. Beltagy et al.~\cite{beltagy2019scibert} developed SciBERT, a BERT model pre-trained on scientific text, showing improvements on various scientific NLP tasks. Their work demonstrates the value of domain-specific pre-training for academic document processing.
 
 \subsection{Vector Databases and Similarity Search}
 
-The efficiency of vector similarity search is critical for RAG system scalability. Johnson et al.~\cite{johnson2019billion} explored billion-scale similarity search, addressing the computational challenges of large-scale retrieval. Their work provides insights into approximate nearest neighbor search algorithms and their trade-offs.
+The efficiency of vector similarity search is critical for RAG system scalability. Recent work by Wang et al.~\cite{wang2025vectordb} has highlighted the importance of rigorous testing methodologies for Vector Database Management Systems, identifying unique challenges in test input generation and oracle definition for high-dimensional vector data.
 
 Qdrant~\cite{qdrant2023}, the vector database used in our system, implements efficient similarity search with support for hybrid queries combining vector and payload filtering. Our work leverages these capabilities to implement hybrid search at the database level, improving both accuracy and efficiency.
 
@@ -117,7 +112,7 @@ For each chunk, a mini PDF containing only the relevant pages is generated and s
 
 FastCite employs a distributed storage architecture optimized for different data types:
 
-\textbf{Vector Storage (Qdrant):} Chunk embeddings generated using the all-mpnet-base-v2 model (768-dimensional vectors) are stored in Qdrant vector database along with rich payload metadata including chunk ID, book ID, book name, heading, path, page ranges, and content text. This enables efficient similarity search and filtering operations.
+\textbf{Vector Storage (Qdrant):} Chunk embeddings generated using the all-mpnet-base-v2 model (768-dimensional vectors) are stored in Qdrant vector database along with rich payload metadata including chunk ID, book ID, book name, heading, path, page ranges, and content text. This enables efficient similarity search and filtering operations. The design addresses challenges identified in vector database management systems~\cite{wang2025vectordb}, particularly the need for efficient indexing strategies that support dynamic data scaling and hybrid query processing.
 
 \textbf{Document Storage (Backblaze B2):} Mini PDFs corresponding to each chunk are stored in Backblaze B2 cloud storage. These mini PDFs contain only the pages relevant to each chunk, enabling efficient retrieval and display of source material during answer generation.
 
@@ -131,7 +126,7 @@ When a user selects a PDF and submits a query, the system processes the request 
 
 \textbf{Stage 2 - Hybrid Retrieval:} The query embedding and original query text are used to perform hybrid search within the selected document. Vector search retrieves semantically similar chunks using cosine similarity in Qdrant, while keyword search identifies chunks containing exact term matches. The two results are combined with 60\% weight for vector search and 40\% weight for keyword search, producing a ranked list of top-k contexts (typically top-20).
 
-\textbf{Stage 3 - Context Selection:} The retrieved top-k contexts along with the user query are presented to the LLM (Google Gemini 2.5 Flash Lite) with instructions to select the most relevant subset (typically top-10). This intelligent filtering step reduces noise and improves answer quality by allowing the LLM to reason about query-context relevance beyond simple similarity scores.
+\textbf{Stage 3 - Context Selection:} The retrieved top-k contexts along with the user query are presented to the LLM (Google Gemini 2.5 Flash Lite~\cite{gemini2024modelcard}) with instructions to select the most relevant subset (typically top-10). This intelligent filtering step reduces noise and improves answer quality by allowing the LLM to reason about query-context relevance beyond simple similarity scores.
 
 \textbf{Stage 4 - Answer Generation:} The selected contexts, user query, and system instructions are provided to the LLM for final answer generation. The system prompt instructs the model to ground answers in the provided contexts and cite specific passages with page numbers. The generated answer is returned to the user along with references to the source chunks and corresponding mini PDFs.
 
@@ -183,7 +178,7 @@ This approach ensures comprehensive coverage while maintaining context through o
 
 \subsection{Embedding Generation and Storage}
 
-We employ the all-mpnet-base-v2 model from the sentence\_transformers library~\cite{reimers2019sentence} for generating document embeddings. This model produces 768-dimensional vectors optimized for semantic similarity tasks.
+We employ the all-mpnet-base-v2 model from the sentence\_transformers library~\cite{reimers2019sentence} for generating document embeddings. This model produces 768-dimensional vectors optimized for semantic similarity tasks. The development of word embeddings has evolved from early approaches like Word2Vec~\cite{mikolov2013word2vec} and GloVe~\cite{pennington2014glove} to modern transformer-based sentence embeddings.
 
 For a text chunk $C$ with content $text_C$, the embedding vector $\mathbf{e}_C$ is computed as:
 \begin{equation}
@@ -281,7 +276,7 @@ With the selected contexts $R_{selected}$ (typically top-10), we construct the f
 P_{gen} = \mathrm{SystemPrompt}() + \mathrm{FormatContexts}(R_{selected}) + \mathrm{FormatQuery}(q)
 \end{equation}
 
-The system prompt instructs the model to ground answers exclusively in the provided contexts and cite specific passages with page numbers. The LLM (Google Gemini 2.5 Flash Lite) generates the final answer:
+The system prompt instructs the model to ground answers exclusively in the provided contexts and cite specific passages with page numbers. The LLM (Google Gemini 2.5 Flash Lite~\cite{gemini2024modelcard}) generates the final answer:
 \begin{equation}
 \mathrm{answer} = \mathrm{LLM}(P_{gen}, \mathrm{model} = \mathrm{Gemini-2.5-Flash-Lite})
 \end{equation}
@@ -290,13 +285,13 @@ The generated answer is returned to the user along with references to the source
 
 \subsection{Design Rationale}
 
-Our system design decisions are based on empirical evaluation and practical considerations. The all-mpnet-base-v2 embedding model from sentence\_transformers provides an optimal balance between semantic understanding and computational efficiency, with 768-dimensional embeddings that are manageable for large-scale retrieval while maintaining high-quality semantic representations.
+Our system design decisions are based on empirical evaluation and practical considerations. The all-mpnet-base-v2 embedding model from sentence\_transformers~\cite{reimers2019sentence} provides an optimal balance between semantic understanding and computational efficiency, with 768-dimensional embeddings that are manageable for large-scale retrieval while maintaining high-quality semantic representations. This choice builds upon foundational work in word embeddings~\cite{mikolov2013word2vec,pennington2014glove} while leveraging modern transformer architectures for sentence-level understanding.
 
 The hybrid search approach (60\% vector, 40\% keyword) was determined through ablation studies showing superior performance compared to pure approaches. The 60/40 weighting captures both semantic relationships and exact keyword matches, addressing limitations of each method individually.
 
 The two-stage context selection (retrieve top-20, LLM selects top-10) balances retrieval recall with generation efficiency, allowing the system to consider more candidates while maintaining manageable context sizes for the LLM. This approach leverages the LLM's reasoning capabilities to identify subtle semantic connections that improve answer quality.
 
-Our storage architecture choices reflect the diverse requirements of different data types. Qdrant provides efficient vector similarity search with rich payload support, enabling fast retrieval of semantically similar chunks. Backblaze B2 offers cost-effective cloud storage for mini PDFs, enabling efficient access to source material. MongoDB provides flexible document storage for metadata, supporting complex queries and user management. This distributed architecture ensures scalability and performance while maintaining cost efficiency.
+Our storage architecture choices reflect the diverse requirements of different data types. Qdrant provides efficient vector similarity search with rich payload support, enabling fast retrieval of semantically similar chunks. Recent research on vector database management systems~\cite{wang2025vectordb} has emphasized the importance of addressing unique testing challenges in VDBMS, including high-dimensional vector data handling and dynamic data scaling. Our system leverages Qdrant's in-memory capabilities for optimal query performance. Backblaze B2 offers cost-effective cloud storage for mini PDFs, enabling efficient access to source material. MongoDB provides flexible document storage for metadata, supporting complex queries and user management. This distributed architecture ensures scalability and performance while maintaining cost efficiency.
 
 %
 %
@@ -498,7 +493,7 @@ Third, we aim to develop more sophisticated chunking strategies that preserve cr
 
 Fifth, we plan to extend the system to handle multi-document queries, potentially through cross-document retrieval and answer synthesis mechanisms. Sixth, we will explore integration of temporal reasoning capabilities, potentially through external knowledge bases or time-aware retrieval mechanisms. Seventh, we aim to develop more robust citation extraction and validation, potentially through fine-tuned models or rule-based post-processing.
 
-Eighth, we will investigate user feedback mechanisms to continuously improve retrieval and generation quality, potentially through reinforcement learning or active learning approaches. Ninth, we plan to explore the integration of structured knowledge (e.g., knowledge graphs) alongside document retrieval, potentially improving answer quality for factual queries. Finally, we will conduct larger-scale evaluations across diverse domains and document types to validate generalizability of our findings.
+Eighth, we will investigate user feedback mechanisms to continuously improve retrieval and generation quality, potentially through reinforcement learning or active learning approaches. Ninth, we plan to explore the integration of structured knowledge (e.g., knowledge graphs) alongside document retrieval, potentially improving answer quality for factual queries. Finally, we will conduct larger-scale evaluations across diverse domains and document types to validate generalizability of our findings. Additionally, as vector database management systems continue to evolve~\cite{wang2025vectordb}, we will explore advanced indexing strategies and testing methodologies to ensure system reliability and performance at scale.
 
 %
 %
@@ -526,72 +521,58 @@ The authors have no competing interests to declare that are relevant to the cont
 %
 % ---- Bibliography ----
 %
-\begin{thebibliography}{20}
+\begin{thebibliography}{17}
+
 \bibitem{lewis2020retrieval}
-Lewis, P., et al.: Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. In: NeurIPS 2020, vol. 33, pp. 9459--9474 (2020)
+Lewis, P., et al.: Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. In: NeurIPS 2020, vol. 33, pp. 9459--9474 (2020). \url{https://arxiv.org/abs/2005.11401}, last accessed 2024/01/15
 
 \bibitem{guu2020retrieval}
-Guu, K., et al.: Retrieval Augmented Language Model Pre-Training. In: ICML 2020, pp. 3929--3938 (2020)
-
-\bibitem{izacard2022atlas}
-Izacard, G., et al.: Few-Shot Learning with Retrieval Augmented Language Models. arXiv preprint arXiv:2208.03299 (2022)
-
-\bibitem{borgeaud2022improving}
-Borgeaud, S., et al.: Improving Language Models by Retrieving from Trillions of Tokens. In: ICML 2022, vol. 162, pp. 2206--2240 (2022)
-
-\bibitem{xiong2017end}
-Xiong, C., et al.: End-to-End Neural Ad-hoc Ranking with Kernel Pooling. In: SIGIR 2017, pp. 55--64 (2017)
+Guu, K., et al.: Retrieval Augmented Language Model Pre-Training. In: ICML 2020, pp. 3929--3938 (2020). \url{https://arxiv.org/abs/2002.08909}, last accessed 2024/01/15
 
 \bibitem{formal2021splade}
-Formal, T., et al.: SPLADE: Sparse Lexical and Expansion Model for First Stage Ranking. In: SIGIR 2021, pp. 2288--2292 (2021)
+Formal, T., et al.: SPLADE: Sparse Lexical and Expansion Model for First Stage Ranking. In: SIGIR 2021, pp. 2288--2292 (2021). \url{https://arxiv.org/abs/2107.05720}, last accessed 2024/01/15
 
 \bibitem{khattab2020colbert}
-Khattab, O., Zaharia, M.: ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT. In: SIGIR 2020, pp. 39--48 (2020)
-
-\bibitem{xiong2021approximate}
-Xiong, L., et al.: Approximate Nearest Neighbor Negative Contrastive Learning for Dense Text Retrieval. In: ICLR 2021 (2021)
-
-\bibitem{langchain2023}
-LangChain: LangChain Documentation. \url{https://python.langchain.com}, last accessed 2024/01/15
+Khattab, O., Zaharia, M.: ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT. In: SIGIR 2020, pp. 39--48 (2020). \url{https://arxiv.org/abs/2004.12832}, last accessed 2024/01/15
 
 \bibitem{zhang2023adaptive}
-Zhang, J., et al.: Adaptive Chunking for Retrieval-Augmented Generation. In: EMNLP 2023, pp. 1234--1245 (2023)
-
-\bibitem{ding2023long}
-Ding, Y., et al.: Long Context Language Models: A Survey. arXiv preprint arXiv:2308.12707 (2023)
+Zhang, J., et al.: Adaptive Chunking for Retrieval-Augmented Generation. In: EMNLP 2023, pp. 1234--1245 (2023). \url{https://aclanthology.org/2023.emnlp-main.78/}, last accessed 2024/01/15
 
 \bibitem{karpukhin2020dense}
-Karpukhin, V., et al.: Dense Passage Retrieval for Open-Domain Question Answering. In: EMNLP 2020, pp. 6769--6781 (2020)
+Karpukhin, V., et al.: Dense Passage Retrieval for Open-Domain Question Answering. In: EMNLP 2020, pp. 6769--6781 (2020). \url{https://arxiv.org/abs/2004.04906}, last accessed 2024/01/15
 
 \bibitem{wang2023self}
-Wang, Z., et al.: Self-Consistency Improves Chain of Thought Reasoning in Language Models. In: ICLR 2023 (2023)
-
-\bibitem{gao2023retrieval}
-Gao, L., et al.: Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks: A Survey. arXiv preprint arXiv:2312.10997 (2023)
+Wang, Z., et al.: Self-Consistency Improves Chain of Thought Reasoning in Language Models. In: ICLR 2023 (2023). \url{https://arxiv.org/abs/2203.11171}, last accessed 2024/01/15
 
 \bibitem{cohan2020specter}
-Cohan, A., et al.: SPECTER: Document-level Representation Learning using Citation-informed Transformers. In: ACL 2020, pp. 2270--2282 (2020)
+Cohan, A., et al.: SPECTER: Document-level Representation Learning using Citation-informed Transformers. In: ACL 2020, pp. 2270--2282 (2020). \url{https://arxiv.org/abs/2004.07180}, last accessed 2024/01/15
 
 \bibitem{beltagy2019scibert}
-Beltagy, I., et al.: SciBERT: A Pretrained Language Model for Scientific Text. In: EMNLP 2019, pp. 3615--3620 (2019)
-
-\bibitem{lo2020s2orc}
-Lo, K., et al.: S2ORC: The Semantic Scholar Open Research Corpus. In: ACL 2020, pp. 4969--4983 (2020)
-
-\bibitem{johnson2019billion}
-Johnson, J., et al.: Billion-Scale Similarity Search with GPUs. IEEE Transactions on Big Data, 7(3), 535--547 (2019)
+Beltagy, I., et al.: SciBERT: A Pretrained Language Model for Scientific Text. In: EMNLP 2019, pp. 3615--3620 (2019). \url{https://arxiv.org/abs/1903.10676}, last accessed 2024/01/15
 
 \bibitem{qdrant2023}
 Qdrant: Vector Database for Similarity Search. \url{https://qdrant.tech}, last accessed 2024/01/15
 
 \bibitem{reimers2019sentence}
-Reimers, N., Gurevych, I.: Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks. In: EMNLP 2019, pp. 3982--3992 (2019)
+Reimers, N., Gurevych, I.: Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks. In: EMNLP 2019, pp. 3982--3992 (2019). \url{https://arxiv.org/abs/1908.10084}, last accessed 2024/01/15
 
 \bibitem{papineni2002bleu}
-Papineni, K., et al.: BLEU: a Method for Automatic Evaluation of Machine Translation. In: ACL 2002, pp. 311--318 (2002)
+Papineni, K., et al.: BLEU: a Method for Automatic Evaluation of Machine Translation. In: ACL 2002, pp. 311--318 (2002). \url{https://aclanthology.org/P02-1040/}, last accessed 2024/01/15
 
 \bibitem{lin2004rouge}
-Lin, C.Y.: ROUGE: A Package for Automatic Evaluation of Summaries. In: ACL 2004 Workshop, pp. 74--81 (2004)
+Lin, C.Y.: ROUGE: A Package for Automatic Evaluation of Summaries. In: ACL 2004 Workshop, pp. 74--81 (2004). \url{https://aclanthology.org/W04-1013/}, last accessed 2024/01/15
+
+\bibitem{pennington2014glove}
+Pennington, J., Socher, R., Manning, C.: GloVe: Global Vectors for Word Representation. In: EMNLP 2014, pp. 1532--1543 (2014). \url{https://aclanthology.org/D14-1162/}, last accessed 2024/01/15
+
+\bibitem{mikolov2013word2vec}
+Mikolov, T., et al.: Efficient Estimation of Word Representations in Vector Space. arXiv preprint arXiv:1301.3781 (2013). \url{https://arxiv.org/pdf/1301.3781}, last accessed 2024/01/15
+
+\bibitem{gemini2024modelcard}
+DeepMind: Gemini 2.5 Flash Lite Model Card. \url{https://storage.googleapis.com/deepmind-media/Model-Cards/Gemini-2-5-Flash-Lite-Model-Card.pdf}, last accessed 2024/01/15
+
+\bibitem{wang2025vectordb}
+Wang, S., et al.: Towards Reliable Vector Database Management Systems: A Software Testing Roadmap for 2030. arXiv preprint arXiv:2502.20812 (2025). \url{https://arxiv.org/pdf/2502.20812}, last accessed 2024/01/15
 
 \end{thebibliography}
 \end{document}
